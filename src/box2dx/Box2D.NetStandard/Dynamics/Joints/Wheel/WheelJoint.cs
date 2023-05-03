@@ -129,12 +129,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 			m_ax = Vector2.Zero;
 			m_ay = Vector2.Zero;
 
-			if (def.frequencyHz.HasValue && def.dampingRatio.HasValue)
-			{
-				LinearStiffness(out def.stiffness, out def.damping, def.frequencyHz.Value, def.dampingRatio.Value, def.bodyA,
-				                def.bodyB);
-			}
-
 			m_stiffness = def.stiffness;
 			m_damping = def.damping;
 		}

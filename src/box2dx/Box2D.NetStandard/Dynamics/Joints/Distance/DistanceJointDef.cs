@@ -19,12 +19,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance
         /// </summary>
         public float damping;
 
-        [Obsolete("Use stiffness and damping instead of frequencyHz and dampingRatio")]
-        public float? dampingRatio;
-
-        [Obsolete("Use stiffness and damping instead of frequencyHz and dampingRatio")]
-        public float? frequencyHz;
-
         /// <summary>
         ///  The equilibrium length between the anchor points.
         /// </summary>

@@ -8,14 +8,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
     {
         public float damping;
 
-        [Obsolete("Use stiffness and damping instead of frequencyHz and dampingRatio")]
-        public float? dampingRatio;
-
         public bool enableLimit;
         public bool enableMotor;
-
-        [Obsolete("Use stiffness and damping instead of frequencyHz and dampingRatio")]
-        public float? frequencyHz;
 
         public Vector2 localAnchorA;
         public Vector2 localAnchorB;

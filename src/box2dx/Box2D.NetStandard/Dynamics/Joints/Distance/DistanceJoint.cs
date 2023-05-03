@@ -81,12 +81,6 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance
             m_localAnchorB = def.localAnchorB;
             m_length = def.length;
 
-            if (def.frequencyHz.HasValue && def.dampingRatio.HasValue)
-            {
-                LinearStiffness(out def.stiffness, out def.damping, def.frequencyHz.Value, def.dampingRatio.Value, def.bodyA,
-                                def.bodyB);
-            }
-
             Stiffness = def.stiffness;
             Damping = def.damping;
             m_impulse = 0.0f;
