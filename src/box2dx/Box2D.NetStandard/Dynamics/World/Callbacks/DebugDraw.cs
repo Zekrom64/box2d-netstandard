@@ -47,33 +47,26 @@ namespace Box2D.NetStandard.Dynamics.World.Callbacks
         /// <summary>
         ///  Draw a closed polygon provided in CCW order.
         /// </summary>
-#pragma warning disable 618
-        [Obsolete("Look out for new calls using Vector2")]
-        public abstract void DrawPolygon(in Vec2[] vertices, int vertexCount, in Color color);
+        public abstract void DrawPolygon(in Vector2[] vertices, int vertexCount, in Color color);
 
         /// <summary>
         ///  Draw a solid closed polygon provided in CCW order.
         /// </summary>
-        [Obsolete("Look out for new calls using Vector2")]
-        public abstract void DrawSolidPolygon(in Vec2[] vertices, int vertexCount, in Color color);
+        public abstract void DrawSolidPolygon(in Vector2[] vertices, int vertexCount, in Color color);
 
         /// <summary>
         ///  Draw a circle.
         /// </summary>
-        [Obsolete("Look out for new calls using Vector2")]
-        public abstract void DrawCircle(in Vec2 center, float radius, in Color color);
+        public abstract void DrawCircle(in Vector2 center, float radius, in Color color);
 
         /// <summary>
         ///  Draw a solid circle.
         /// </summary>
-        [Obsolete("Look out for new calls using Vector2")]
-        public abstract void DrawSolidCircle(in Vec2 center, float radius, in Vec2 axis, in Color color);
+        public abstract void DrawSolidCircle(in Vector2 center, float radius, in Vector2 axis, in Color color);
 
         /// <summary>
         ///  Draw a line segment.
         /// </summary>
-        [Obsolete("Look out for new calls using Vector2")]
-        public abstract void DrawSegment(in Vec2 p1, in Vec2 p2, in Color color);
-#pragma warning restore 618
+        public abstract void DrawSegment(in Vector2 p1, in Vector2 p2, in Color color);
     }
 }
