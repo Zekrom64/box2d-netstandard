@@ -21,48 +21,48 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
         /// <summary>
         ///  A flag to enable joint limits.
         /// </summary>
-        public bool enableLimit;
+        public bool EnableLimit;
 
         /// <summary>
         ///  A flag to enable the joint motor.
         /// </summary>
-        public bool enableMotor;
+        public bool EnableMotor;
 
         /// <summary>
         ///  The local anchor point relative to body1's origin.
         /// </summary>
-        public Vector2 localAnchorA;
+        public Vector2 LocalAnchorA;
 
         /// <summary>
         ///  The local anchor point relative to body2's origin.
         /// </summary>
-        public Vector2 localAnchorB;
+        public Vector2 LocalAnchorB;
 
         /// <summary>
         ///  The lower angle for the joint limit (radians).
         /// </summary>
-        public float lowerAngle;
+        public float LowerAngle;
 
         /// <summary>
         ///  The maximum motor torque used to achieve the desired motor speed.
         ///  Usually in N-m.
         /// </summary>
-        public float maxMotorTorque;
+        public float MaxMotorTorque;
 
         /// <summary>
         ///  The desired motor speed. Usually in radians per second.
         /// </summary>
-        public float motorSpeed;
+        public float MotorSpeed;
 
         /// <summary>
         ///  The body2 angle minus body1 angle in the reference state (radians).
         /// </summary>
-        public float referenceAngle;
+        public float ReferenceAngle;
 
         /// <summary>
         ///  The upper angle for the joint limit (radians).
         /// </summary>
-        public float upperAngle;
+        public float UpperAngle;
 
         /// <summary>
         ///  Initialize the bodies, anchors, and reference angle using the world
@@ -70,11 +70,11 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
         /// </summary>
         public void Initialize(Body body1, Body body2, Vector2 anchor)
         {
-            bodyA = body1;
-            bodyB = body2;
-            localAnchorA = body1.GetLocalPoint(anchor);
-            localAnchorB = body2.GetLocalPoint(anchor);
-            referenceAngle = body2.GetAngle() - body1.GetAngle();
+            BodyA = body1;
+            BodyB = body2;
+            LocalAnchorA = body1.GetLocalPoint(anchor);
+            LocalAnchorB = body2.GetLocalPoint(anchor);
+            ReferenceAngle = body2.GetAngle() - body1.GetAngle();
         }
     }
 }

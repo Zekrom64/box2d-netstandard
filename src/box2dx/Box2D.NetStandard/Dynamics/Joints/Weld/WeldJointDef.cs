@@ -8,22 +8,16 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
         /// <summary>
         ///  The rotational damping in N*m*s
         /// </summary>
-        public float damping;
+        public float Damping;
 
-        [Obsolete("Use Joint.AngularStiffness to get stiffness & damping values", true)]
-        public float dampingRatio;
-
-        [Obsolete("Use Joint.AngularStiffness to get stiffness & damping values", true)]
-        public float frequencyHz;
-
-        public Vector2 localAnchorA;
-        public Vector2 localAnchorB;
-        public float referenceAngle;
+        public Vector2 LocalAnchorA;
+        public Vector2 LocalAnchorB;
+        public float ReferenceAngle;
 
         /// <summary>
         ///  The rotational stiffness in N*m
         ///  Disable softness with a value of 0
         /// </summary>
-        public float stiffness;
+        public float Stiffness;
     }
 }

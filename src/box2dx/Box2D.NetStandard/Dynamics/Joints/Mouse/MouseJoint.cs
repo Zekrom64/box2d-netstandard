@@ -140,13 +140,14 @@ namespace Box2D.NetStandard.Dynamics.Joints.Mouse
             // Compute the effective mass matrix.
             m_rB = Math.Mul(qB, -m_localCenterB);
 
-            // K    = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
-            //      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
-            //        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
-            var K = new Matrix3x2();
-            K.M11 = m_invMassB + m_invIB * m_rB.Y * m_rB.Y + m_gamma;
-            K.M21 = -m_invIB * m_rB.X * m_rB.Y;
-            K.M12 = K.M21;
+			// K    = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
+			//      = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
+			//        [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
+			var K = new Matrix3x2 {
+				M11 = m_invMassB + m_invIB * m_rB.Y * m_rB.Y + m_gamma,
+				M21 = -m_invIB * m_rB.X * m_rB.Y
+			};
+			K.M12 = K.M21;
             K.M22 = m_invMassB + m_invIB * m_rB.X * m_rB.Y + m_gamma;
 
             /*Matrix3x2*/

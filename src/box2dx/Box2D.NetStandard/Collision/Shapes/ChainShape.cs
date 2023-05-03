@@ -17,7 +17,7 @@ namespace Box2D.NetStandard.Collision.Shapes
         internal const byte contactMatch = 3;
         internal int m_count;
         internal Vector2 m_prevVertex, m_nextVertex;
-        internal Vector2[] m_vertices;
+        internal Vector2[] m_vertices = Array.Empty<Vector2>();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ChainShape() => m_radius = Settings.PolygonRadius;

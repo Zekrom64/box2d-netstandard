@@ -62,7 +62,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Pulley
             LocalAnchorA = new Vector2(-1.0f, 0.0f);
             LocalAnchorB = new Vector2(1.0f, 0.0f);
             Ratio = 1.0f;
-            collideConnected = true;
+            CollideConnected = true;
         }
 
         /// Initialize the bodies, anchors, lengths, max lengths, and ratio using the world anchors.
@@ -75,8 +75,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Pulley
             Vector2 anchor2,
             float ratio)
         {
-            bodyA = body1;
-            bodyB = body2;
+            BodyA = body1;
+            BodyB = body2;
             GroundAnchorA = groundAnchor1;
             GroundAnchorB = groundAnchor2;
             LocalAnchorA = body1.GetLocalPoint(anchor1);

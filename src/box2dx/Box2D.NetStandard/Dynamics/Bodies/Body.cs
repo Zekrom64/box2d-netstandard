@@ -46,10 +46,10 @@ namespace Box2D.NetStandard.Dynamics.Bodies
         private readonly World.World m_world;
         internal float m_angularDamping;
         internal float m_angularVelocity;
-        internal ContactEdge m_contactList;
+        internal ContactEdge? m_contactList;
         internal int m_fixtureCount;
 
-        internal Fixture m_fixtureList;
+        internal Fixture? m_fixtureList;
         private BodyFlags m_flags;
 
         internal Vector2 m_force;
@@ -60,15 +60,15 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 
         internal int m_islandIndex;
 
-        internal JointEdge m_jointList;
+        internal JointEdge? m_jointList;
 
         internal float m_linearDamping;
 
         internal Vector2 m_linearVelocity;
 
         internal float m_mass;
-        internal Body m_next;
-        internal Body m_prev;
+        internal Body? m_next;
+        internal Body? m_prev;
 
         internal float m_sleepTime;
 
@@ -79,15 +79,6 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 
         internal Transform m_xf; // the body origin transform
 
-        // No public default constructor
-        private Body()
-        { }
-
-        // private
-
-        private Body(in BodyDef bd, World.World world)
-        { }
-
 
         internal Body(BodyDef bd, World.World world)
         {
@@ -96,41 +87,41 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 
             m_flags = 0;
 
-            if (bd.bullet)
+            if (bd.Bullet)
             {
                 SetFlag(BodyFlags.Bullet);
             }
 
-            if (bd.fixedRotation)
+            if (bd.FixedRotation)
             {
                 SetFlag(BodyFlags.FixedRotation);
             }
 
-            if (bd.allowSleep)
+            if (bd.AllowSleep)
             {
                 SetFlag(BodyFlags.AutoSleep);
             }
 
-            if (bd.awake && bd.type != BodyType.Static)
+            if (bd.Awake && bd.Type != BodyType.Static)
             {
                 SetFlag(BodyFlags.Awake);
             }
 
-            if (bd.enabled)
+            if (bd.Enabled)
             {
                 SetFlag(BodyFlags.Enabled);
             }
 
             m_world = world;
 
-            m_xf.p = bd.position;
-            m_xf.q = Matrex.CreateRotation(bd.angle); // Actually about twice as fast to use our own function
+            m_xf.p = bd.Position;
+            m_xf.q = Matrex.CreateRotation(bd.Angle); // Actually about twice as fast to use our own function
 
             m_sweep.localCenter = Vector2.Zero;
             m_sweep.c0 = m_xf.p;
             m_sweep.c = m_xf.p;
-            m_sweep.a0 = bd.angle;
-            m_sweep.a = bd.angle;
+            m_sweep.a0 = bd.Angle;
+            m_sweep.a = bd.Angle;
             m_sweep.alpha0 = 0.0f;
 
             m_jointList = null;
@@ -138,19 +129,19 @@ namespace Box2D.NetStandard.Dynamics.Bodies
             m_prev = null;
             m_next = null;
 
-            m_linearVelocity = bd.linearVelocity;
-            m_angularVelocity = bd.angularVelocity;
+            m_linearVelocity = bd.LinearVelocity;
+            m_angularVelocity = bd.AngularVelocity;
 
-            m_linearDamping = bd.linearDamping;
-            m_angularDamping = bd.angularDamping;
-            m_gravityScale = bd.gravityScale;
+            m_linearDamping = bd.LinearDamping;
+            m_angularDamping = bd.AngularDamping;
+            m_gravityScale = bd.GravityScale;
 
             m_force = Vector2.Zero;
             m_torque = 0.0f;
 
             m_sleepTime = 0.0f;
 
-            m_type = bd.type;
+            m_type = bd.Type;
 
             m_mass = 0.0f;
             m_invMass = 0.0f;
@@ -158,7 +149,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies
             m_I = 0.0f;
             m_invI = 0.0f;
 
-            UserData = bd.userData;
+            UserData = bd.UserData;
 
             m_fixtureList = null;
             m_fixtureCount = 0;
@@ -177,7 +168,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies
             get => m_xf.p;
         }
 
-        public object UserData
+        public object? UserData
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get;
@@ -242,11 +233,12 @@ namespace Box2D.NetStandard.Dynamics.Bodies
         /// <warning>This function is locked during callbacks.</warning>
         public Fixture CreateFixture(in Shape shape, float density = 0f)
         {
-            var def = new FixtureDef();
-            def.shape = shape;
-            def.density = density;
+			var def = new FixtureDef {
+				Shape = shape,
+				Density = density
+			};
 
-            return CreateFixture(def);
+			return CreateFixture(def);
         }
 
         public void DestroyFixture(Fixture fixture)
@@ -267,8 +259,8 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 
             // Remove the fixture from this body's singly linked list.
             //Debug.Assert(_fixtureCount > 0);
-            Fixture node = m_fixtureList;
-            Fixture prevNode = null;
+            Fixture? node = m_fixtureList;
+            Fixture? prevNode = null;
             bool found = false;
             while (node != null)
             {
@@ -294,11 +286,11 @@ namespace Box2D.NetStandard.Dynamics.Bodies
             float density = fixture.m_density;
 
             // Destroy any contacts associated with the fixture.
-            ContactEdge edge = m_contactList;
+            ContactEdge? edge = m_contactList;
             while (edge != null)
             {
-                Contact c = edge.contact;
-                edge = edge.next;
+                Contact c = edge.Contact;
+                edge = edge.Next;
 
                 Fixture fixtureA = c.GetFixtureA();
                 Fixture fixtureB = c.GetFixtureB();
@@ -347,7 +339,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies
             m_sweep.a0 = angle;
 
             BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
-            for (Fixture f = m_fixtureList; f != null; f = f.m_next)
+            for (Fixture? f = m_fixtureList; f != null; f = f.m_next)
             {
                 f.Synchronize(broadPhase, m_xf, m_xf);
             }
@@ -600,7 +592,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 
             // Accumulate mass over all fixtures.
             Vector2 localCenter = Vector2.Zero;
-            for (Fixture f = m_fixtureList; f != null; f = f.m_next)
+            for (Fixture? f = m_fixtureList; f != null; f = f.m_next)
             {
                 if (f.m_density == 0.0f)
                 {
@@ -723,19 +715,19 @@ namespace Box2D.NetStandard.Dynamics.Bodies
             m_torque = 0.0f;
 
             // Delete the attached contacts.
-            ContactEdge ce = m_contactList;
+            ContactEdge? ce = m_contactList;
             while (ce != null)
             {
                 ContactEdge ce0 = ce;
-                ce = ce.next;
-                m_world.m_contactManager.Destroy(ce0.contact);
+                ce = ce.Next;
+                m_world.m_contactManager.Destroy(ce0.Contact);
             }
 
             m_contactList = null;
 
             // Touch the proxies so that new contacts will be created (when appropriate)
             BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
-            for (Fixture f = m_fixtureList; f != null; f = f.m_next)
+            for (Fixture? f = m_fixtureList; f != null; f = f.m_next)
             {
                 int proxyCount = f.m_proxyCount;
                 for (var i = 0; i < proxyCount; ++i)
@@ -835,7 +827,7 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 
                 // Create all proxies.
                 BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
-                for (Fixture f = m_fixtureList; f != null; f = f.m_next)
+                for (Fixture? f = m_fixtureList; f != null; f = f.m_next)
                 {
                     f.CreateProxies(broadPhase, m_xf);
                 }
@@ -849,18 +841,18 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 
                 // Destroy all proxies.
                 BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
-                for (Fixture f = m_fixtureList; f != null; f = f.m_next)
+                for (Fixture? f = m_fixtureList; f != null; f = f.m_next)
                 {
                     f.DestroyProxies(broadPhase);
                 }
 
                 // Destroy the attached contacts.
-                ContactEdge ce = m_contactList;
+                ContactEdge? ce = m_contactList;
                 while (ce != null)
                 {
                     ContactEdge ce0 = ce;
-                    ce = ce.next;
-                    m_world.m_contactManager.Destroy(ce0.contact);
+                    ce = ce.Next;
+                    m_world.m_contactManager.Destroy(ce0.Contact);
                 }
 
                 m_contactList = null;
@@ -895,19 +887,16 @@ namespace Box2D.NetStandard.Dynamics.Bodies
         public bool IsFixedRotation() => HasFlag(BodyFlags.FixedRotation);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Fixture GetFixtureList() => m_fixtureList;
+        public Fixture? GetFixtureList() => m_fixtureList;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JointEdge GetJointList() => m_jointList;
+        public JointEdge? GetJointList() => m_jointList;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ContactEdge GetContactList() => m_contactList;
+        public ContactEdge? GetContactList() => m_contactList;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Body GetNext() => m_next;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T GetUserData<T>() => (T)UserData;
+        public Body? GetNext() => m_next;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetUserData(object data)
@@ -930,18 +919,19 @@ namespace Box2D.NetStandard.Dynamics.Bodies
 
             if (IsAwake())
             {
-                var xf1 = new Transform();
-                xf1.q = Matrex.CreateRotation(m_sweep.a0); // Actually about twice as fast to use our own function
-                xf1.p = m_sweep.c0 - Vector2.Transform(m_sweep.localCenter, xf1.q); //Math.Mul(xf1.q, _sweep.localCenter);
+				var xf1 = new Transform {
+					q = Matrex.CreateRotation(m_sweep.a0) // Actually about twice as fast to use our own function
+				};
+				xf1.p = m_sweep.c0 - Vector2.Transform(m_sweep.localCenter, xf1.q); //Math.Mul(xf1.q, _sweep.localCenter);
 
-                for (Fixture f = m_fixtureList; f != null; f = f.m_next)
+                for (Fixture? f = m_fixtureList; f != null; f = f.m_next)
                 {
                     f.Synchronize(broadPhase, xf1, m_xf);
                 }
             }
             else
             {
-                for (Fixture f = m_fixtureList; f != null; f = f.m_next)
+                for (Fixture? f = m_fixtureList; f != null; f = f.m_next)
                 {
                     f.Synchronize(broadPhase, m_xf, m_xf);
                 }
@@ -964,9 +954,9 @@ namespace Box2D.NetStandard.Dynamics.Bodies
             }
 
             // Does a joint prevent collision?
-            for (JointEdge jn = m_jointList; jn != null; jn = jn.next)
+            for (JointEdge? jn = m_jointList; jn != null; jn = jn.Next)
             {
-                if (jn.other == other && jn.joint.m_collideConnected == false)
+                if (jn.Other == other && jn.Joint.m_collideConnected == false)
                 {
                     return false;
                 }
@@ -995,11 +985,11 @@ namespace Box2D.NetStandard.Dynamics.Bodies
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal bool IsConnected(Body other)
         {
-            for (JointEdge jn = m_jointList; jn != null; jn = jn.next)
+            for (JointEdge? jn = m_jointList; jn != null; jn = jn.Next)
             {
-                if (jn.other == other)
+                if (jn.Other == other)
                 {
-                    return jn.joint.m_collideConnected == false;
+                    return jn.Joint.m_collideConnected == false;
                 }
             }
 

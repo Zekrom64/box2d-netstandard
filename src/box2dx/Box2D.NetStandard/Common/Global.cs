@@ -34,14 +34,9 @@ namespace Box2D.NetStandard.Common
 {
     public class Global
     {
-        public static void Swap<T>(ref T a, ref T b)
-        {
-            T c = a;
-            a = b;
-            b = c;
-        }
+		public static void Swap<T>(ref T a, ref T b) => (b, a) = (a, b);
 
-        public static void GetPointStates(
+		public static void GetPointStates(
             out PointState[] state1,
             out PointState[] state2,
             in Manifold manifold1,

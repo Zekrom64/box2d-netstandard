@@ -86,9 +86,9 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
         public RevoluteJoint(RevoluteJointDef def)
             : base(def)
         {
-            m_localAnchorA = def.localAnchorA;
-            m_localAnchorB = def.localAnchorB;
-            m_referenceAngle = def.referenceAngle;
+            m_localAnchorA = def.LocalAnchorA;
+            m_localAnchorB = def.LocalAnchorB;
+            m_referenceAngle = def.ReferenceAngle;
 
             m_impulse = Vector2.Zero;
             m_axialMass = 0.0f;
@@ -96,12 +96,12 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
             m_lowerImpulse = 0.0f;
             m_upperImpulse = 0.0f;
 
-            LowerLimit = def.lowerAngle;
-            UpperLimit = def.upperAngle;
-            m_maxMotorTorque = def.maxMotorTorque;
-            m_motorSpeed = def.motorSpeed;
-            IsLimitEnabled = def.enableLimit;
-            IsMotorEnabled = def.enableMotor;
+            LowerLimit = def.LowerAngle;
+            UpperLimit = def.UpperAngle;
+            m_maxMotorTorque = def.MaxMotorTorque;
+            m_motorSpeed = def.MotorSpeed;
+            IsLimitEnabled = def.EnableLimit;
+            IsMotorEnabled = def.EnableMotor;
 
             m_angle = 0.0f;
         }
@@ -281,7 +281,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
             Vector2 vB = data.velocities[m_indexB].v;
             float wB = data.velocities[m_indexB].w;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB);
+            Rot qA = new(aA), qB = new(aB);
 
             m_rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
             m_rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
@@ -450,15 +450,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
             Vector2 cB = data.positions[m_indexB].c;
             float aB = data.positions[m_indexB].a;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB);
+            Rot qA = new(aA), qB = new(aB);
 
             var angularError = 0.0f;
-            var positionError = 0.0f;
+			bool fixedRotation = m_invIA + m_invIB == 0.0f;
 
-            bool fixedRotation = m_invIA + m_invIB == 0.0f;
-
-            // Solve angular limit constraint.
-            if (IsLimitEnabled && fixedRotation == false)
+			// Solve angular limit constraint.
+			if (IsLimitEnabled && fixedRotation == false)
             {
                 float angle = aB - aA - m_referenceAngle;
                 var C = 0.0f;
@@ -485,35 +483,37 @@ namespace Box2D.NetStandard.Dynamics.Joints.Revolute
                 angularError = MathF.Abs(C);
             }
 
-            // Solve point-to-point constraint.
-            {
-                qA.Set(aA);
-                qB.Set(aB);
-                Vector2 rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
-                Vector2 rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
+			float positionError;
+			// Solve point-to-point constraint.
+			{
+				qA.Set(aA);
+				qB.Set(aB);
+				Vector2 rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
+				Vector2 rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
 
-                Vector2 C = cB + rB - cA - rA;
-                positionError = C.Length();
+				Vector2 C = cB + rB - cA - rA;
+				positionError = C.Length();
 
-                float mA = m_invMassA, mB = m_invMassB;
-                float iA = m_invIA, iB = m_invIB;
+				float mA = m_invMassA, mB = m_invMassB;
+				float iA = m_invIA, iB = m_invIB;
 
-                var K = new Matrix3x2();
-                K.M11 = mA + mB + iA * rA.Y * rA.Y + iB * rB.Y * rB.Y;
-                K.M21 = -iA * rA.X * rA.Y - iB * rB.X * rB.Y;
-                K.M12 = K.M21;
-                K.M22 = mA + mB + iA * rA.X * rA.X + iB * rB.X * rB.X;
+				var K = new Matrix3x2 {
+					M11 = mA + mB + iA * rA.Y * rA.Y + iB * rB.Y * rB.Y,
+					M21 = -iA * rA.X * rA.Y - iB * rB.X * rB.Y
+				};
+				K.M12 = K.M21;
+				K.M22 = mA + mB + iA * rA.X * rA.X + iB * rB.X * rB.X;
 
-                Vector2 impulse = -K.Solve(C);
+				Vector2 impulse = -K.Solve(C);
 
-                cA -= mA * impulse;
-                aA -= iA * Vectex.Cross(rA, impulse);
+				cA -= mA * impulse;
+				aA -= iA * Vectex.Cross(rA, impulse);
 
-                cB += mB * impulse;
-                aB += iB * Vectex.Cross(rB, impulse);
-            }
+				cB += mB * impulse;
+				aB += iB * Vectex.Cross(rB, impulse);
+			}
 
-            data.positions[m_indexA].c = cA;
+			data.positions[m_indexA].c = cA;
             data.positions[m_indexA].a = aA;
             data.positions[m_indexB].c = cB;
             data.positions[m_indexB].a = aB;

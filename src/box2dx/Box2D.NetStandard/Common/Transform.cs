@@ -96,7 +96,7 @@ namespace Box2D.NetStandard.Common
         public static Transform Identity
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => new Transform(Vector2.Zero, Matrix3x2.Identity);
+            get => new(Vector2.Zero, Matrix3x2.Identity);
         }
     }
 }

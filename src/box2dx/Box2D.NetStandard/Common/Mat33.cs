@@ -68,11 +68,12 @@ namespace Box2D.NetStandard.Common
             {
                 det = 1.0f / det;
             }
-            var x = new Vector3();
-            x.X = det * Vector3.Dot(b, Vector3.Cross(ey, ez));
-            x.Y = det * Vector3.Dot(ex, Vector3.Cross(b, ez));
-            x.Z = det * Vector3.Dot(ex, Vector3.Cross(ey, b));
-            return x;
+			var x = new Vector3 {
+				X = det * Vector3.Dot(b, Vector3.Cross(ey, ez)),
+				Y = det * Vector3.Dot(ex, Vector3.Cross(b, ez)),
+				Z = det * Vector3.Dot(ex, Vector3.Cross(ey, b))
+			};
+			return x;
         }
 
         /// <summary>
@@ -89,10 +90,11 @@ namespace Box2D.NetStandard.Common
             {
                 det = 1.0f / det;
             }
-            var x = new Vector2();
-            x.X = det * (a22 * b.X - a12 * b.Y);
-            x.Y = det * (a11 * b.Y - a21 * b.X);
-            return x;
+			var x = new Vector2 {
+				X = det * (a22 * b.X - a12 * b.Y),
+				Y = det * (a11 * b.Y - a21 * b.X)
+			};
+			return x;
         }
 
         internal Mat33 GetInverse22(Mat33 M)

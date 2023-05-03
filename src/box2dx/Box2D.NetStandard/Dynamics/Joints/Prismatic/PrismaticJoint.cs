@@ -141,11 +141,11 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
         public PrismaticJoint(PrismaticJointDef def)
             : base(def)
         {
-            m_localAnchorA = def.localAnchorA;
-            m_localAnchorB = def.localAnchorB;
-            m_localXAxisA = Vector2.Normalize(def.localAxisA);
+            m_localAnchorA = def.LocalAnchorA;
+            m_localAnchorB = def.LocalAnchorB;
+            m_localXAxisA = Vector2.Normalize(def.LocalAxisA);
             m_localYAxisA = Vectex.Cross(1.0f, m_localXAxisA);
-            m_referenceAngle = def.referenceAngle;
+            m_referenceAngle = def.ReferenceAngle;
 
             m_impulse = Vector2.Zero;
             m_axialMass = 0.0f;
@@ -153,13 +153,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
             m_lowerImpulse = 0.0f;
             m_upperImpulse = 0.0f;
 
-            LowerLimit = def.lowerTranslation;
-            UpperLimit = def.upperTranslation;
+            LowerLimit = def.LowerTranslation;
+            UpperLimit = def.UpperTranslation;
 
-            m_maxMotorForce = def.maxMotorForce;
-            m_motorSpeed = def.motorSpeed;
-            IsLimitEnabled = def.enableLimit;
-            IsMotorEnabled = def.enableMotor;
+            m_maxMotorForce = def.MaxMotorForce;
+            m_motorSpeed = def.MotorSpeed;
+            IsLimitEnabled = def.EnableLimit;
+            IsMotorEnabled = def.EnableMotor;
 
             m_translation = 0.0f;
             m_axis = Vector2.Zero;
@@ -355,7 +355,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
             Vector2 vB = data.velocities[m_indexB].v;
             float wB = data.velocities[m_indexB].w;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB);
+            Rot qA = new(aA), qB = new(aB);
 
             // Compute the effective masses.
             Vector2 rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
@@ -520,11 +520,12 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
 
             // Solve the prismatic constraint in block form.
             {
-                var Cdot = new Vector2();
-                Cdot.X = Vector2.Dot(m_perp, vB - vA) + m_s2 * wB - m_s1 * wA;
-                Cdot.Y = wB - wA;
+				var Cdot = new Vector2 {
+					X = Vector2.Dot(m_perp, vB - vA) + m_s2 * wB - m_s1 * wA,
+					Y = wB - wA
+				};
 
-                Vector2 df = m_k.Solve(-Cdot);
+				Vector2 df = m_k.Solve(-Cdot);
                 m_impulse += df;
 
                 Vector2 P = df.X * m_perp;
@@ -551,7 +552,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
             Vector2 cB = data.positions[m_indexB].c;
             float aB = data.positions[m_indexB].a;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB);
+            Rot qA = new(aA), qB = new(aB);
 
             float mA = m_invMassA, mB = m_invMassB;
             float iA = m_invIA, iB = m_invIB;
@@ -570,11 +571,12 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
             float s2 = Vectex.Cross(rB, perp);
 
             Vector3 impulse;
-            var C1 = new Vector2();
-            C1.X = Vector2.Dot(perp, d);
-            C1.Y = aB - aA - m_referenceAngle;
+			var C1 = new Vector2 {
+				X = Vector2.Dot(perp, d),
+				Y = aB - aA - m_referenceAngle
+			};
 
-            float linearError = MathF.Abs(C1.X);
+			float linearError = MathF.Abs(C1.X);
             float angularError = MathF.Abs(C1.Y);
 
             var active = false;
@@ -617,17 +619,19 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
                 float k23 = iA * a1 + iB * a2;
                 float k33 = mA + mB + iA * a1 * a1 + iB * a2 * a2;
 
-                var K = new Mat33();
-                K.ex = new Vector3(k11, k12, k13);
-                K.ey = new Vector3(k12, k22, k23);
-                K.ez = new Vector3(k13, k23, k33);
+				var K = new Mat33 {
+					ex = new Vector3(k11, k12, k13),
+					ey = new Vector3(k12, k22, k23),
+					ez = new Vector3(k13, k23, k33)
+				};
 
-                var C = new Vector3();
-                C.X = C1.X;
-                C.Y = C1.Y;
-                C.Z = C2;
+				var C = new Vector3 {
+					X = C1.X,
+					Y = C1.Y,
+					Z = C2
+				};
 
-                impulse = K.Solve33(-C);
+				impulse = K.Solve33(-C);
             }
             else
             {

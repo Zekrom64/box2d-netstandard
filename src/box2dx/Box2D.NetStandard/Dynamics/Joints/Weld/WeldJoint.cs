@@ -33,11 +33,11 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
 
         public WeldJoint(WeldJointDef def) : base(def)
         {
-            m_localAnchorA = def.localAnchorA;
-            m_localAnchorB = def.localAnchorB;
-            m_referenceAngle = def.referenceAngle;
-            Stiffness = def.stiffness;
-            Damping = def.damping;
+            m_localAnchorA = def.LocalAnchorA;
+            m_localAnchorB = def.LocalAnchorB;
+            m_referenceAngle = def.ReferenceAngle;
+            Stiffness = def.Stiffness;
+            Damping = def.Damping;
         }
 
         public override b2Vec2 GetAnchorA => m_bodyA.GetWorldPoint(m_localAnchorA);
@@ -92,7 +92,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
             b2Vec2 vB = data.velocities[m_indexB].v;
             float wB = data.velocities[m_indexB].w;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB);
+            Rot qA = new(aA), qB = new(aB);
 
             m_rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
             m_rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
@@ -242,7 +242,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Weld
             b2Vec2 cB = data.positions[m_indexB].c;
             float aB = data.positions[m_indexB].a;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB);
+            Rot qA = new(aA), qB = new(aB);
 
             float mA = m_invMassA, mB = m_invMassB;
             float iA = m_invIA, iB = m_invIB;

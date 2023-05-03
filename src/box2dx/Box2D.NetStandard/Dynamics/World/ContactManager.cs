@@ -32,6 +32,7 @@ using Box2D.NetStandard.Dynamics.Bodies;
 using Box2D.NetStandard.Dynamics.Contacts;
 using Box2D.NetStandard.Dynamics.Fixtures;
 using Box2D.NetStandard.Dynamics.World.Callbacks;
+using System;
 
 namespace Box2D.NetStandard.Dynamics.World
 {
@@ -43,8 +44,8 @@ namespace Box2D.NetStandard.Dynamics.World
         internal BroadPhase m_broadPhase;
         internal int m_contactCount;
         internal ContactFilter m_contactFilter;
-        internal Contact m_contactList;
-        internal ContactListener m_contactListener;
+        internal Contact? m_contactList;
+        internal ContactListener? m_contactListener;
 
         internal ContactManager()
         {
@@ -84,35 +85,35 @@ namespace Box2D.NetStandard.Dynamics.World
             }
 
             // Remove from body 1
-            if (c.m_nodeA.prev != null)
+            if (c.m_nodeA.Prev != null)
             {
-                c.m_nodeA.prev.next = c.m_nodeA.next;
+                c.m_nodeA.Prev.Next = c.m_nodeA.Next;
             }
 
-            if (c.m_nodeA.next != null)
+            if (c.m_nodeA.Next != null)
             {
-                c.m_nodeA.next.prev = c.m_nodeA.prev;
+                c.m_nodeA.Next.Prev = c.m_nodeA.Prev;
             }
 
             if (c.m_nodeA == bodyA.m_contactList)
             {
-                bodyA.m_contactList = c.m_nodeA.next;
+                bodyA.m_contactList = c.m_nodeA.Next;
             }
 
             // Remove from body 2
-            if (c.m_nodeB.prev != null)
+            if (c.m_nodeB.Prev != null)
             {
-                c.m_nodeB.prev.next = c.m_nodeB.next;
+                c.m_nodeB.Prev.Next = c.m_nodeB.Next;
             }
 
-            if (c.m_nodeB.next != null)
+            if (c.m_nodeB.Next != null)
             {
-                c.m_nodeB.next.prev = c.m_nodeB.prev;
+                c.m_nodeB.Next.Prev = c.m_nodeB.Prev;
             }
 
             if (c.m_nodeB == bodyB.m_contactList)
             {
-                bodyB.m_contactList = c.m_nodeB.next;
+                bodyB.m_contactList = c.m_nodeB.Next;
             }
 
             // provided all the above removes all references, it'll be picked up by the GC
@@ -123,7 +124,7 @@ namespace Box2D.NetStandard.Dynamics.World
         internal void Collide()
         {
             // Update awake contacts.
-            Contact c = m_contactList;
+            Contact? c = m_contactList;
             while (c != null)
             {
                 Fixture fixtureA = c.FixtureA;
@@ -192,10 +193,10 @@ namespace Box2D.NetStandard.Dynamics.World
             m_broadPhase.UpdatePairs(AddPair);
         }
 
-        private void AddPair(object proxyUserDataA, object proxyUserDataB)
+        private void AddPair(object? proxyUserDataA, object? proxyUserDataB)
         {
-            var proxyA = (FixtureProxy)proxyUserDataA;
-            var proxyB = (FixtureProxy)proxyUserDataB;
+            var proxyA = (FixtureProxy?)proxyUserDataA ?? throw new InvalidOperationException();
+            var proxyB = (FixtureProxy?)proxyUserDataB ?? throw new InvalidOperationException();
 
             Fixture fixtureA = proxyA.fixture;
             Fixture fixtureB = proxyB.fixture;
@@ -215,15 +216,15 @@ namespace Box2D.NetStandard.Dynamics.World
             // TODO_ERIN use a hash table to remove a potential bottleneck when both
             // bodies have a lot of contacts.
             // Does a contact already exist?
-            ContactEdge edge = bodyB.GetContactList();
+            ContactEdge? edge = bodyB.GetContactList();
             while (edge != null)
             {
-                if (edge.other == bodyA)
+                if (edge.Other == bodyA)
                 {
-                    Fixture fA = edge.contact.GetFixtureA();
-                    Fixture fB = edge.contact.GetFixtureB();
-                    int iA = edge.contact.GetChildIndexA();
-                    int iB = edge.contact.GetChildIndexB();
+                    Fixture fA = edge.Contact.GetFixtureA();
+                    Fixture fB = edge.Contact.GetFixtureB();
+                    int iA = edge.Contact.GetChildIndexA();
+                    int iB = edge.Contact.GetChildIndexB();
 
                     if (fA == fixtureA && fB == fixtureB && iA == indexA && iB == indexB)
                     // A contact already exists.
@@ -238,7 +239,7 @@ namespace Box2D.NetStandard.Dynamics.World
                     }
                 }
 
-                edge = edge.next;
+                edge = edge.Next;
             }
 
             // Does a joint override collision? Is at least one body dynamic?
@@ -263,8 +264,8 @@ namespace Box2D.NetStandard.Dynamics.World
             // Contact creation may swap fixtures.
             fixtureA = c.GetFixtureA();
             fixtureB = c.GetFixtureB();
-            indexA = c.GetChildIndexA();
-            indexB = c.GetChildIndexB();
+            //indexA = c.GetChildIndexA();
+            //indexB = c.GetChildIndexB();
             bodyA = fixtureA.GetBody();
             bodyB = fixtureB.GetBody();
 
@@ -281,27 +282,27 @@ namespace Box2D.NetStandard.Dynamics.World
             // Connect to island graph.
 
             // Connect to body A
-            c.m_nodeA.contact = c;
-            c.m_nodeA.other = bodyB;
+            c.m_nodeA.Contact = c;
+            c.m_nodeA.Other = bodyB;
 
-            c.m_nodeA.prev = null;
-            c.m_nodeA.next = bodyA.m_contactList;
+            c.m_nodeA.Prev = null;
+            c.m_nodeA.Next = bodyA.m_contactList;
             if (bodyA.m_contactList != null)
             {
-                bodyA.m_contactList.prev = c.m_nodeA;
+                bodyA.m_contactList.Prev = c.m_nodeA;
             }
 
             bodyA.m_contactList = c.m_nodeA;
 
             // Connect to body B
-            c.m_nodeB.contact = c;
-            c.m_nodeB.other = bodyA;
+            c.m_nodeB.Contact = c;
+            c.m_nodeB.Other = bodyA;
 
-            c.m_nodeB.prev = null;
-            c.m_nodeB.next = bodyB.m_contactList;
+            c.m_nodeB.Prev = null;
+            c.m_nodeB.Next = bodyB.m_contactList;
             if (bodyB.m_contactList != null)
             {
-                bodyB.m_contactList.prev = c.m_nodeB;
+                bodyB.m_contactList.Prev = c.m_nodeB;
             }
 
             bodyB.m_contactList = c.m_nodeB;

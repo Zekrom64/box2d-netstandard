@@ -100,9 +100,9 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 
 		public WheelJoint(WheelJointDef def) : base(def)
 		{
-			m_localAnchorA = def.localAnchorA;
-			m_localAnchorB = def.localAnchorB;
-			m_localXAxisA = def.localAxisA;
+			m_localAnchorA = def.LocalAnchorA;
+			m_localAnchorB = def.LocalAnchorB;
+			m_localXAxisA = def.LocalAxisA;
 			m_localYAxisA = Vectex.Cross(1f, m_localXAxisA);
 
 			m_mass = 0f;
@@ -115,13 +115,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 			m_axialMass = 0f;
 			m_lowerImpulse = 0f;
 			m_upperImpulse = 0f;
-			m_lowerTranslation = def.lowerTranslation;
-			m_upperTranslation = def.upperTranslation;
-			m_enableLimit = def.enableLimit;
+			m_lowerTranslation = def.LowerTranslation;
+			m_upperTranslation = def.UpperTranslation;
+			m_enableLimit = def.EnableLimit;
 
-			m_maxMotorTorque = def.maxMotorTorque;
-			m_motorSpeed = def.motorSpeed;
-			m_enableMotor = def.enableMotor;
+			m_maxMotorTorque = def.MaxMotorTorque;
+			m_motorSpeed = def.MotorSpeed;
+			m_enableMotor = def.EnableMotor;
 
 			m_bias = 0f;
 			m_gamma = 0f;
@@ -129,8 +129,8 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 			m_ax = Vector2.Zero;
 			m_ay = Vector2.Zero;
 
-			m_stiffness = def.stiffness;
-			m_damping = def.damping;
+			m_stiffness = def.Stiffness;
+			m_damping = def.Damping;
 		}
 
 		public override Vector2 GetAnchorA => m_bodyA.GetWorldPoint(m_localAnchorA);
@@ -226,13 +226,13 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private float GetLowerLimit() => m_lowerTranslation;
+		public float GetLowerLimit() => m_lowerTranslation;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private float GetUpperLimit() => m_upperTranslation;
+		public float GetUpperLimit() => m_upperTranslation;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void SetLimits(float lower, float upper)
+		public void SetLimits(float lower, float upper)
 		{
 			//Debug.Assert(lower <= upper);
 			if (lower != m_lowerTranslation || upper != m_upperTranslation)
@@ -247,10 +247,10 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private bool IsMotorEnabled() => m_enableMotor;
+		public bool IsMotorEnabled() => m_enableMotor;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void EnableMotor(bool flag)
+		public void EnableMotor(bool flag)
 		{
 			if (flag != m_enableMotor)
 			{
@@ -261,7 +261,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void SetMaxMotorTorque(float torque)
+		public void SetMaxMotorTorque(float torque)
 		{
 			if (torque != m_maxMotorTorque)
 			{
@@ -272,25 +272,25 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private float GetMotorTorque(float inv_dt) => inv_dt * m_motorImpulse;
+		public float GetMotorTorque(float inv_dt) => inv_dt * m_motorImpulse;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void SetStiffness(float stiffness)
+		public void SetStiffness(float stiffness)
 		{
 			m_stiffness = stiffness;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private float GetStiffness() => m_stiffness;
+		public float GetStiffness() => m_stiffness;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void SetDamping(float damping)
+		public void SetDamping(float damping)
 		{
 			m_damping = damping;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private float GetDamping() => m_damping;
+		public float GetDamping() => m_damping;
 
 		internal override void InitVelocityConstraints(in SolverData data)
 		{
@@ -316,7 +316,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 			Vector2 vB = data.velocities[m_indexB].v;
 			float wB = data.velocities[m_indexB].w;
 
-			Rot qA = new Rot(aA), qB = new Rot(aB);
+			Rot qA = new(aA), qB = new(aB);
 
 			// Compute the effective masses.
 			Vector2 rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
@@ -558,7 +558,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 
 			if (m_enableLimit)
 			{
-				Rot qA = new Rot(aA), qB = new Rot(aB);
+				Rot qA = new(aA), qB = new(aB);
 
 				Vector2 rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
 				Vector2 rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
@@ -607,7 +607,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 
 			// Solve perpendicular constraint
 			{
-				Rot qA = new Rot(aA), qB = new Rot(aB);
+				Rot qA = new(aA), qB = new(aB);
 
 				Vector2 rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
 				Vector2 rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);

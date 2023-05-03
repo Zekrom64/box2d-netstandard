@@ -47,14 +47,14 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
     [DebuggerDisplay("Fixture of {m_body.UserData}")]
     public class Fixture
     {
-        internal Body m_body;
+        internal Body? m_body;
 
         internal float m_density;
         internal Filter m_filter;
         public float m_friction;
 
-        internal Fixture m_next;
-        internal FixtureProxy[] m_proxies;
+        internal Fixture? m_next;
+        internal FixtureProxy[] m_proxies = Array.Empty<FixtureProxy>();
         internal int m_proxyCount;
         internal float m_restitution;
 
@@ -66,11 +66,19 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
             m_density = 0f;
         }
 
+		private Shape? shape = null;
+
         public Shape Shape
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get;
-            private set;
+            get {
+#if DEBUG
+				return shape ?? throw new InvalidOperationException();
+#else
+				return shape!;
+#endif
+			}
+            private set => shape = value;
         }
 
         private bool Sensor
@@ -83,7 +91,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
         public Filter FilterData
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => m_filter;
+            get => m_filter!;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
@@ -95,10 +103,10 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
         public Body Body
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => m_body;
+            get => m_body!;
         }
 
-        public Fixture Next
+        public Fixture? Next
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => m_next;
@@ -120,7 +128,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
             set => m_restitution = value;
         }
 
-        public object UserData
+        public object? UserData
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get;
@@ -129,23 +137,18 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
         public void Create(Body body, FixtureDef def)
         {
-            if (def.shape == null)
-            {
-                throw new ArgumentNullException("def.shape");
-            }
-
-            UserData = def.userData;
-            m_friction = def.friction;
-            m_restitution = def.restitution;
+            UserData = def.UserData;
+            m_friction = def.Friction;
+            m_restitution = def.Restitution;
 
             m_body = body;
             m_next = null;
 
-            m_filter = def.filter;
+            m_filter = def.Filter;
 
-            Sensor = def.isSensor;
+            Sensor = def.IsSensor;
 
-            Shape = def.shape.Clone();
+            Shape = def.Shape.Clone();
 
             // Reserve proxy space
             int childCount = Shape.GetChildCount();
@@ -157,7 +160,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
 
             m_proxyCount = 0;
 
-            m_density = def.density;
+            m_density = def.Density;
         }
 
         internal void CreateProxies(BroadPhase broadPhase, in Transform xf)
@@ -213,7 +216,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
             }
         }
 
-        private void SetFilterData(in Filter filter)
+        public void SetFilterData(in Filter filter)
         {
             m_filter = filter;
 
@@ -228,10 +231,10 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
             }
 
             // Flag associated contacts for filtering.
-            ContactEdge edge = m_body.GetContactList();
+            ContactEdge? edge = m_body.GetContactList();
             while (edge != null)
             {
-                Contact contact = edge.contact;
+                Contact contact = edge.Contact;
                 Fixture fixtureA = contact.GetFixtureA();
                 Fixture fixtureB = contact.GetFixtureB();
                 if (fixtureA == this || fixtureB == this)
@@ -239,7 +242,7 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
                     contact.FlagForFiltering();
                 }
 
-                edge = edge.next;
+                edge = edge.Next;
             }
 
             World.World world = m_body.GetWorld();
@@ -261,27 +264,27 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
         public bool IsSensor() => Sensor;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Filter GetFilterData() => m_filter;
+        public Filter GetFilterData() => m_filter;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Body GetBody() => Body;
 
-        public Fixture GetNext() => m_next;
+        public Fixture? GetNext() => m_next;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TestPoint(in Vector2 p) => Shape.TestPoint(m_body.GetTransform(), p);
+        public bool TestPoint(in Vector2 p) => Shape.TestPoint(Body.GetTransform(), p);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool RayCast(out RayCastOutput output, in RayCastInput input, int childIndex) =>
-            Shape.RayCast(out output, in input, m_body.GetTransform(), childIndex);
+            Shape.RayCast(out output, in input, Body.GetTransform(), childIndex);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void GetMassData(out MassData massData)
         {
-            Shape.ComputeMass(out massData, m_density);
+            Shape!.ComputeMass(out massData, m_density);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public AABB GetAABB(int childIndex) => m_proxies[childIndex].aabb;
+        public AABB GetAABB(int childIndex) => m_proxies![childIndex].aabb;
     }
 }

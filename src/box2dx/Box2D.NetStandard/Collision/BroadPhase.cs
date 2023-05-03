@@ -83,7 +83,10 @@ namespace Box2D.NetStandard.Collision
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal object GetUserData(int proxyId) => m_tree.GetUserData(proxyId);
+		internal object? GetUserData(int proxyId) => m_tree.GetUserData(proxyId);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal T GetUserData<T>(int proxyId) => (T?)GetUserData(proxyId) ?? throw new NullReferenceException();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool TestOverlap(int proxyIdA, int proxyIdB)
@@ -102,7 +105,7 @@ namespace Box2D.NetStandard.Collision
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int GetTreeHeight() => m_tree.Height;
 
-		public void UpdatePairs(Action<object, object> AddPair)
+		public void UpdatePairs(Action<object?, object?> AddPair)
 		{
 			m_pairCount = 0;
 
@@ -122,8 +125,8 @@ namespace Box2D.NetStandard.Collision
 			for (var i = 0; i < m_pairCount; ++i)
 			{
 				Pair primaryPair = m_pairBuffer[i];
-				object userDataA = m_tree.GetUserData(primaryPair.proxyIdA);
-				object userDataB = m_tree.GetUserData(primaryPair.proxyIdB);
+				object? userDataA = m_tree.GetUserData(primaryPair.proxyIdA);
+				object? userDataB = m_tree.GetUserData(primaryPair.proxyIdB);
 				AddPair(userDataA, userDataB);
 			}
 
@@ -235,7 +238,7 @@ namespace Box2D.NetStandard.Collision
 			if (m_pairCount == m_pairCapacity)
 			{
 				Pair[] oldBuffer = m_pairBuffer;
-				m_pairCapacity = m_pairCapacity + (m_pairCapacity >> 1);
+				m_pairCapacity += (m_pairCapacity >> 1);
 				m_pairBuffer = new Pair[m_pairCapacity];
 				Array.Copy(oldBuffer, m_pairBuffer, m_pairCount);
 			}

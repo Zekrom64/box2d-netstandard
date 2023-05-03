@@ -77,12 +77,12 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance
         public DistanceJoint(DistanceJointDef def)
             : base(def)
         {
-            m_localAnchorA = def.localAnchorA;
-            m_localAnchorB = def.localAnchorB;
-            m_length = def.length;
+            m_localAnchorA = def.LocalAnchorA;
+            m_localAnchorB = def.LocalAnchorB;
+            m_length = def.Length;
 
-            Stiffness = def.stiffness;
-            Damping = def.damping;
+            Stiffness = def.Stiffness;
+            Damping = def.Damping;
             m_impulse = 0.0f;
             m_gamma = 0.0f;
             m_bias = 0.0f;
@@ -141,7 +141,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance
             Vector2 vB = data.velocities[m_indexB].v;
             float wB = data.velocities[m_indexB].w;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB);
+            Rot qA = new(aA), qB = new(aB);
 
             m_rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
             m_rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);
@@ -251,7 +251,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Distance
             Vector2 cB = data.positions[m_indexB].c;
             float aB = data.positions[m_indexB].a;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB);
+            Rot qA = new(aA), qB = new(aB);
 
             Vector2 rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
             Vector2 rB = Math.Mul(qB, m_localAnchorB - m_localCenterB);

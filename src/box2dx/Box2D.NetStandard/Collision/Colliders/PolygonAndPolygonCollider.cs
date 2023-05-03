@@ -114,10 +114,11 @@ namespace Box2D.NetStandard.Collision
 
                 if (separation <= totalRadius)
                 {
-                    var cp = new ManifoldPoint();
-                    cp.localPoint = Math.MulT(xf2, clipPoints2[i].v);
-                    cp.id = clipPoints2[i].id;
-                    if (flip != 0)
+					var cp = new ManifoldPoint {
+						localPoint = Math.MulT(xf2, clipPoints2[i].v),
+						id = clipPoints2[i].id
+					};
+					if (flip != 0)
                     {
                         // Swap features
                         ContactFeature cf = cp.id.cf;

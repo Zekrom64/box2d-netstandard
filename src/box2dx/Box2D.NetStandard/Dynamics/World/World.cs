@@ -63,21 +63,20 @@ namespace Box2D.NetStandard.Dynamics.World
         // These are for debugging the solver
         private readonly bool m_warmStarting;
 
-        private Action DrawDebugDataStub = () => { };
         private bool m_allowSleep;
 
         private int m_bodyCount;
 
-        private Body m_bodyList;
-        private DebugDraw m_debugDraw;
+        private Body? m_bodyList;
+        private DebugDraw? m_debugDraw;
 
-        private DestructionListener m_destructionListener;
+        private DestructionListener? m_destructionListener;
 
         private Vector2 m_gravity;
 
         private float m_inv_dt0;
         private int m_jointCount;
-        private Joint m_jointList;
+        private Joint? m_jointList;
         private bool m_locked;
 
         internal bool m_newContacts;
@@ -138,7 +137,7 @@ namespace Box2D.NetStandard.Dynamics.World
         /// </summary>
         /// <returns>The head of the world body list.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Body GetBodyList() => m_bodyList;
+        public Body? GetBodyList() => m_bodyList;
 
         /// <summary>
         ///  Get the world joint list. With the returned joint, use Joint.GetNext to get
@@ -146,10 +145,10 @@ namespace Box2D.NetStandard.Dynamics.World
         /// </summary>
         /// <returns>The head of the world joint list.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Joint GetJointList() => m_jointList;
+        public Joint? GetJointList() => m_jointList;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Contact GetContactList() => m_contactManager.m_contactList;
+        public Contact? GetContactList() => m_contactManager.m_contactList;
 
         /// <summary>
         ///  Get the number of bodies.
@@ -227,7 +226,6 @@ namespace Box2D.NetStandard.Dynamics.World
         public void SetDebugDraw(DebugDraw debugDraw)
         {
             m_debugDraw = debugDraw;
-            DrawDebugDataStub = DrawDebugData;
         }
 
         /// <summary>
@@ -248,12 +246,12 @@ namespace Box2D.NetStandard.Dynamics.World
             }
 
 
-            var b = new Body(def, this);
-
-            // Add to world doubly linked list.
-            b.m_prev = null;
-            b.m_next = m_bodyList;
-            if (m_bodyList != null)
+			var b = new Body(def, this) {
+				// Add to world doubly linked list.
+				m_prev = null,
+				m_next = m_bodyList
+			};
+			if (m_bodyList != null)
             {
                 m_bodyList.m_prev = b;
             }
@@ -282,34 +280,34 @@ namespace Box2D.NetStandard.Dynamics.World
             }
 
             // Delete the attached joints.
-            JointEdge je = b.m_jointList;
+            JointEdge? je = b.m_jointList;
             while (je != null)
             {
                 JointEdge je0 = je;
-                je = je.next;
+                je = je.Next;
 
-                m_destructionListener?.SayGoodbye(je0.joint);
+                m_destructionListener?.SayGoodbye(je0.Joint);
 
-                DestroyJoint(je0.joint);
+                DestroyJoint(je0.Joint);
 
                 b.m_jointList = je;
             }
 
             b.m_jointList = null;
 
-            ContactEdge ce = b.m_contactList;
+            ContactEdge? ce = b.m_contactList;
             while (ce != null)
             {
                 ContactEdge ce0 = ce;
-                ce = ce.next;
-                m_contactManager.Destroy(ce0.contact);
+                ce = ce.Next;
+                m_contactManager.Destroy(ce0.Contact);
             }
 
             b.m_contactList = null;
 
             // Delete the attached fixtures. This destroys broad-phase
             // proxies.
-            Fixture f = b.m_fixtureList;
+            Fixture? f = b.m_fixtureList;
             while (f != null)
             {
                 Fixture f0 = f;
@@ -343,7 +341,6 @@ namespace Box2D.NetStandard.Dynamics.World
             }
 
             --m_bodyCount;
-            b = null;
         }
 
         /// <summary>
@@ -377,10 +374,10 @@ namespace Box2D.NetStandard.Dynamics.World
             ++m_jointCount;
 
             // Connect to the bodies' doubly linked lists.
-            j.m_edgeA.joint = j;
-            j.m_edgeA.other = j.m_bodyB;
+            j.m_edgeA.Joint = j;
+            j.m_edgeA.Other = j.m_bodyB;
             j.m_edgeA.Prev = null;
-            j.m_edgeA.next = j.m_bodyA.m_jointList;
+            j.m_edgeA.Next = j.m_bodyA.m_jointList;
             if (j.m_bodyA.m_jointList != null)
             {
                 j.m_bodyA.m_jointList.Prev = j.m_edgeA;
@@ -388,10 +385,10 @@ namespace Box2D.NetStandard.Dynamics.World
 
             j.m_bodyA.m_jointList = j.m_edgeA;
 
-            j.m_edgeB.joint = j;
-            j.m_edgeB.other = j.m_bodyA;
+            j.m_edgeB.Joint = j;
+            j.m_edgeB.Other = j.m_bodyA;
             j.m_edgeB.Prev = null;
-            j.m_edgeB.next = j.m_bodyB.m_jointList;
+            j.m_edgeB.Next = j.m_bodyB.m_jointList;
             if (j.m_bodyB.m_jointList != null)
             {
                 j.m_bodyB.m_jointList.Prev = j.m_edgeB;
@@ -399,23 +396,23 @@ namespace Box2D.NetStandard.Dynamics.World
 
             j.m_bodyB.m_jointList = j.m_edgeB;
 
-            Body bodyA = def.bodyA;
-            Body bodyB = def.bodyB;
+            Body bodyA = def.BodyA;
+            Body bodyB = def.BodyB;
 
             // If the joint prevents collisions, then flag any contacts for filtering.
-            if (def.collideConnected == false)
+            if (def.CollideConnected == false)
             {
-                ContactEdge edge = bodyB.m_contactList;
+                ContactEdge? edge = bodyB.m_contactList;
                 while (edge != null)
                 {
-                    if (edge.other == bodyA)
+                    if (edge.Other == bodyA)
                     // Flag the contact for filtering at the next time step (where either
                     // body is awake).
                     {
-                        edge.contact.FlagForFiltering();
+                        edge.Contact.FlagForFiltering();
                     }
 
-                    edge = edge.next;
+                    edge = edge.Next;
                 }
             }
 
@@ -467,40 +464,40 @@ namespace Box2D.NetStandard.Dynamics.World
             // Remove from body 1.
             if (j.m_edgeA.Prev != null)
             {
-                j.m_edgeA.Prev.next = j.m_edgeA.next;
+                j.m_edgeA.Prev.Next = j.m_edgeA.Next;
             }
 
-            if (j.m_edgeA.next != null)
+            if (j.m_edgeA.Next != null)
             {
-                j.m_edgeA.next.Prev = j.m_edgeA.Prev;
+                j.m_edgeA.Next.Prev = j.m_edgeA.Prev;
             }
 
             if (j.m_edgeA == bodyA.m_jointList)
             {
-                bodyA.m_jointList = j.m_edgeA.next;
+                bodyA.m_jointList = j.m_edgeA.Next;
             }
 
             j.m_edgeA.Prev = null;
-            j.m_edgeA.next = null;
+            j.m_edgeA.Next = null;
 
             // Remove from body 2
             if (j.m_edgeB.Prev != null)
             {
-                j.m_edgeB.Prev.next = j.m_edgeB.next;
+                j.m_edgeB.Prev.Next = j.m_edgeB.Next;
             }
 
-            if (j.m_edgeB.next != null)
+            if (j.m_edgeB.Next != null)
             {
-                j.m_edgeB.next.Prev = j.m_edgeB.Prev;
+                j.m_edgeB.Next.Prev = j.m_edgeB.Prev;
             }
 
             if (j.m_edgeB == bodyB.m_jointList)
             {
-                bodyB.m_jointList = j.m_edgeB.next;
+                bodyB.m_jointList = j.m_edgeB.Next;
             }
 
             j.m_edgeB.Prev = null;
-            j.m_edgeB.next = null;
+            j.m_edgeB.Next = null;
 
             //Debug.Assert(_jointCount > 0);
             --m_jointCount;
@@ -508,17 +505,17 @@ namespace Box2D.NetStandard.Dynamics.World
             // If the joint prevents collisions, then flag any contacts for filtering.
             if (collideConnected == false)
             {
-                ContactEdge edge = bodyB.m_contactList;
+                ContactEdge? edge = bodyB.m_contactList;
                 while (edge != null)
                 {
-                    if (edge.other == bodyA)
+                    if (edge.Other == bodyA)
                     // Flag the contact for filtering at the next time step (where either
                     // body is awake).
                     {
-                        edge.contact.FlagForFiltering();
+                        edge.Contact.FlagForFiltering();
                     }
 
-                    edge = edge.next;
+                    edge = edge.Next;
                 }
             }
         }
@@ -533,7 +530,7 @@ namespace Box2D.NetStandard.Dynamics.World
             m_allowSleep = flag;
             if (!m_allowSleep)
             {
-                for (Body b = m_bodyList; b != null; b = b.m_next)
+                for (Body? b = m_bodyList; b != null; b = b.m_next)
                 {
                     b.SetAwake(true);
                 }
@@ -550,27 +547,26 @@ namespace Box2D.NetStandard.Dynamics.World
                                     m_contactManager.m_contactListener);
 
             // Clear all the island flags.
-            for (Body b = m_bodyList; b != null; b = b.m_next)
+            for (Body? b = m_bodyList; b != null; b = b.m_next)
             {
                 b.UnsetFlag(BodyFlags.Island);
             }
 
-            for (Contact c = m_contactManager.m_contactList; c != null; c = c.m_next)
+            for (Contact? c = m_contactManager.m_contactList; c != null; c = c.m_next)
             {
                 c.m_flags &= ~CollisionFlags.Island;
             }
 
-            for (Joint j = m_jointList; j != null; j = j.m_next)
+            for (Joint? j = m_jointList; j != null; j = j.m_next)
             {
                 j.m_islandFlag = false;
             }
 
-            // Build and simulate all awake islands.
-            int stackSize = m_bodyCount;
-            //Stack<Body> stack = new Stack<Body>(_bodyCount);
-            //Body stack     = (b2Body**) m_stackAllocator.Allocate(stackSize * sizeof(b2Body*));
-            var stack = new Body[m_bodyCount];
-            for (Body seed = m_bodyList; seed != null; seed = seed.m_next)
+			// Build and simulate all awake islands.
+			//Stack<Body> stack = new Stack<Body>(_bodyCount);
+			//Body stack     = (b2Body**) m_stackAllocator.Allocate(stackSize * sizeof(b2Body*));
+			var stack = new Body[m_bodyCount];
+            for (Body? seed = m_bodyList; seed != null; seed = seed.m_next)
             {
                 if (seed.HasFlag(BodyFlags.Island))
                 {
@@ -613,9 +609,9 @@ namespace Box2D.NetStandard.Dynamics.World
                     b.SetFlag(BodyFlags.Awake);
 
                     // Search all contacts connected to this body.
-                    for (ContactEdge ce = b.m_contactList; ce != null; ce = ce.next)
+                    for (ContactEdge? ce = b.m_contactList; ce != null; ce = ce.Next)
                     {
-                        Contact contact = ce.contact;
+                        Contact contact = ce.Contact;
 
                         // Has this contact already been added to an island?
                         if ((contact.m_flags & CollisionFlags.Island) == CollisionFlags.Island)
@@ -641,7 +637,7 @@ namespace Box2D.NetStandard.Dynamics.World
                         island.Add(contact);
                         contact.m_flags |= CollisionFlags.Island;
 
-                        Body other = ce.other;
+                        Body other = ce.Other;
 
                         // Was the other body already added to this island?
                         if (other.HasFlag(BodyFlags.Island))
@@ -655,14 +651,14 @@ namespace Box2D.NetStandard.Dynamics.World
                     }
 
                     // Search all joints connect to this body.
-                    for (JointEdge je = b.m_jointList; je != null; je = je.next)
+                    for (JointEdge? je = b.m_jointList; je != null; je = je.Next)
                     {
-                        if (je.joint.m_islandFlag)
+                        if (je.Joint.m_islandFlag)
                         {
                             continue;
                         }
 
-                        Body other = je.other;
+                        Body other = je.Other;
 
                         // Don't simulate joints connected to disabled bodies.
                         if (other.IsEnabled() == false)
@@ -670,8 +666,8 @@ namespace Box2D.NetStandard.Dynamics.World
                             continue;
                         }
 
-                        island.Add(je.joint);
-                        je.joint.m_islandFlag = true;
+                        island.Add(je.Joint);
+                        je.Joint.m_islandFlag = true;
 
                         if (other.HasFlag(BodyFlags.Island))
                         {
@@ -698,11 +694,9 @@ namespace Box2D.NetStandard.Dynamics.World
                 }
             }
 
-            stack = null;
-
-            {
-                // Synchronize fixtures, check for out of range bodies.
-                for (Body b = m_bodyList; b != null; b = b.GetNext())
+			{
+				// Synchronize fixtures, check for out of range bodies.
+				for (Body? b = m_bodyList; b != null; b = b.GetNext())
                 {
                     // If a body was not in an island then it did not move.
                     if (!b.HasFlag(BodyFlags.Island))
@@ -732,13 +726,13 @@ namespace Box2D.NetStandard.Dynamics.World
 
             if (m_stepComplete)
             {
-                for (Body b = m_bodyList; b != null; b = b.m_next)
+                for (Body? b = m_bodyList; b != null; b = b.m_next)
                 {
                     b.UnsetFlag(BodyFlags.Island);
                     b.m_sweep.alpha0 = 0.0f;
                 }
 
-                for (Contact c = m_contactManager.m_contactList; c != null; c = c.m_next)
+                for (Contact? c = m_contactManager.m_contactList; c != null; c = c.m_next)
                 {
                     // Invalidate TOI
                     c.m_flags &= ~(CollisionFlags.Toi | CollisionFlags.Island);
@@ -751,10 +745,10 @@ namespace Box2D.NetStandard.Dynamics.World
             for (; ; )
             {
                 // Find the first TOI.
-                Contact minContact = null;
+                Contact? minContact = null;
                 var minAlpha = 1.0f;
 
-                for (Contact c = m_contactManager.m_contactList; c != null; c = c.m_next)
+                for (Contact? c = m_contactManager.m_contactList; c != null; c = c.m_next)
                 {
                     // Is this contact disabled?
                     if (c.Enabled == false)
@@ -768,8 +762,8 @@ namespace Box2D.NetStandard.Dynamics.World
                         continue;
                     }
 
-                    var alpha = 1.0f;
-                    if ((c.m_flags & CollisionFlags.Toi) == CollisionFlags.Toi)
+					float alpha;
+					if ((c.m_flags & CollisionFlags.Toi) == CollisionFlags.Toi)
                     {
                         // This contact has a valid cached TOI.
                         alpha = c.m_toi;
@@ -913,7 +907,7 @@ namespace Box2D.NetStandard.Dynamics.World
                         Body body = bodies[i];
                         if (body.m_type == BodyType.Dynamic)
                         {
-                            for (ContactEdge ce = body.m_contactList; ce != null; ce = ce.next)
+                            for (ContactEdge? ce = body.m_contactList; ce != null; ce = ce.Next)
                             {
                                 if (island.m_bodyCount == island.m_bodyCapacity)
                                 {
@@ -925,7 +919,7 @@ namespace Box2D.NetStandard.Dynamics.World
                                     break;
                                 }
 
-                                Contact contact = ce.contact;
+                                Contact contact = ce.Contact;
 
                                 // Has this contact already been added to the island?
                                 if ((contact.m_flags & CollisionFlags.Island) == CollisionFlags.Island)
@@ -934,7 +928,7 @@ namespace Box2D.NetStandard.Dynamics.World
                                 }
 
                                 // Only add static, kinematic, or bullet bodies.
-                                Body other = ce.other;
+                                Body other = ce.Other;
                                 if (other.m_type == BodyType.Dynamic &&
                                     body.IsBullet() == false && other.IsBullet() == false)
                                 {
@@ -1021,9 +1015,9 @@ namespace Box2D.NetStandard.Dynamics.World
                         body.SynchronizeFixtures();
 
                         // Invalidate all contact TOIs on this displaced body.
-                        for (ContactEdge ce = body.m_contactList; ce != null; ce = ce.next)
+                        for (ContactEdge? ce = body.m_contactList; ce != null; ce = ce.Next)
                         {
-                            ce.contact.m_flags &= ~(CollisionFlags.Toi | CollisionFlags.Island);
+                            ce.Contact.m_flags &= ~(CollisionFlags.Toi | CollisionFlags.Island);
                         }
                     }
 
@@ -1106,7 +1100,7 @@ namespace Box2D.NetStandard.Dynamics.World
 
         public void ClearForces()
         {
-            for (Body body = m_bodyList; body != null; body = body.GetNext())
+            for (Body? body = m_bodyList; body != null; body = body.GetNext())
             {
                 body.m_force = Vector2.Zero;
                 body.m_torque = 0.0f;
@@ -1117,7 +1111,7 @@ namespace Box2D.NetStandard.Dynamics.World
         {
             bool internalCallback(int proxyId)
             {
-                var proxy = (FixtureProxy)m_contactManager.m_broadPhase.GetUserData(proxyId);
+                var proxy = m_contactManager.m_broadPhase.GetUserData<FixtureProxy>(proxyId);
                 return callback(proxy.fixture);
             }
 
@@ -1132,7 +1126,7 @@ namespace Box2D.NetStandard.Dynamics.World
 
             bool internalCallback(int proxyId)
             {
-                var proxy = (FixtureProxy)m_contactManager.m_broadPhase.GetUserData(proxyId);
+                var proxy = m_contactManager.m_broadPhase.GetUserData<FixtureProxy>(proxyId);
                 result[i++] = proxy.fixture;
                 return i != maxFixtures;
             }
@@ -1147,8 +1141,7 @@ namespace Box2D.NetStandard.Dynamics.World
         {
             float internalCallback(RayCastInput input, int proxyId)
             {
-                object userData = m_contactManager.m_broadPhase.GetUserData(proxyId);
-                var proxy = (FixtureProxy)userData;
+                var proxy = m_contactManager.m_broadPhase.GetUserData<FixtureProxy>(proxyId);
                 Fixture fixture = proxy.fixture;
                 int index = proxy.childIndex;
                 bool hit = fixture.RayCast(out RayCastOutput output, input, index);
@@ -1170,6 +1163,7 @@ namespace Box2D.NetStandard.Dynamics.World
             m_contactManager.m_broadPhase.RayCast(internalCallback, in input);
         }
 
+		/*
         private void DrawJoint(Joint joint)
         {
             Body b1 = joint.GetBodyA();
@@ -1186,16 +1180,16 @@ namespace Box2D.NetStandard.Dynamics.World
             switch (joint)
             {
                 case DistanceJoint j:
-                    m_debugDraw.DrawSegment(p1, p2, color);
+                    m_debugDraw!.DrawSegment(p1, p2, color);
                     break;
 
                 case PulleyJoint pulley:
                     {
                         Vector2 s1 = pulley.GroundAnchorA;
                         Vector2 s2 = pulley.GroundAnchorB;
-                        m_debugDraw.DrawSegment(s1, p1, color);
-                        m_debugDraw.DrawSegment(s2, p2, color);
-                        m_debugDraw.DrawSegment(s1, s2, color);
+                        m_debugDraw!.DrawSegment(s1, p1, color);
+                        m_debugDraw!.DrawSegment(s2, p2, color);
+                        m_debugDraw!.DrawSegment(s1, s2, color);
                     }
                     break;
 
@@ -1204,13 +1198,15 @@ namespace Box2D.NetStandard.Dynamics.World
                     break;
 
                 default:
-                    m_debugDraw.DrawSegment(x1, p1, color);
-                    m_debugDraw.DrawSegment(p1, p2, color);
-                    m_debugDraw.DrawSegment(x2, p2, color);
+                    m_debugDraw!.DrawSegment(x1, p1, color);
+                    m_debugDraw!.DrawSegment(p1, p2, color);
+                    m_debugDraw!.DrawSegment(x2, p2, color);
                     break;
             }
         }
+		*/
 
+		/*
         private void DrawFixture(Fixture fixture, Transform xf, Color color)
         {
             switch (fixture.Shape)
@@ -1221,7 +1217,7 @@ namespace Box2D.NetStandard.Dynamics.World
                         float radius = circle.m_radius;
                         var axis = new Vector2(xf.q.M11, xf.q.M21);
 
-                        m_debugDraw.DrawSolidCircle(center, radius, axis, color);
+                        m_debugDraw!.DrawSolidCircle(center, radius, axis, color);
                     }
                     break;
 
@@ -1238,27 +1234,29 @@ namespace Box2D.NetStandard.Dynamics.World
                             vertices[i] = Math.Mul(xf, localVertices[i]);
                         }
 
-                        m_debugDraw.DrawSolidPolygon(vertices, vertexCount, color);
+                        m_debugDraw!.DrawSolidPolygon(vertices, vertexCount, color);
                     }
                     break;
 
                 case EdgeShape edge:
                     {
-                        m_debugDraw.DrawSegment(Math.Mul(xf, edge.m_vertex1), Math.Mul(xf, edge.m_vertex2), color);
+                        m_debugDraw!.DrawSegment(Math.Mul(xf, edge.m_vertex1), Math.Mul(xf, edge.m_vertex2), color);
                     }
                     break;
             }
         }
+		*/
 
         public void DrawDebugData()
         {
+			if (m_debugDraw == null) throw new InvalidOperationException();
             DrawFlags flags = m_debugDraw.Flags;
             if ((flags & DrawFlags.Shape) == DrawFlags.Shape)
             {
-                for (Body b = m_bodyList; b != null; b = b.GetNext())
+                for (Body? b = m_bodyList; b != null; b = b.GetNext())
                 {
                     Transform xf = b.GetTransform();
-                    for (Fixture f = b.GetFixtureList(); f != null; f = f.GetNext())
+                    for (Fixture? f = b.GetFixtureList(); f != null; f = f.GetNext())
                     {
                         if (b.Type() == BodyType.Dynamic && b.m_mass == 0.0f)
                         // Bad body
@@ -1291,7 +1289,7 @@ namespace Box2D.NetStandard.Dynamics.World
 
             if ((flags & DrawFlags.Joint) == DrawFlags.Joint)
             {
-                for (Joint j = m_jointList; j != null; j = j.GetNext())
+                for (Joint? j = m_jointList; j != null; j = j.GetNext())
                 {
                     j.Draw(m_debugDraw);
                 }
@@ -1300,7 +1298,7 @@ namespace Box2D.NetStandard.Dynamics.World
             if ((flags & DrawFlags.Pair) == DrawFlags.Pair)
             {
                 var color = new Color(0.3f, 0.9f, 0.9f);
-                for (Contact c = m_contactManager.m_contactList; c != null; c = c.GetNext())
+                for (Contact? c = m_contactManager.m_contactList; c != null; c = c.GetNext())
                 {
                     Fixture fixtureA = c.GetFixtureA();
                     Fixture fixtureB = c.GetFixtureB();
@@ -1318,14 +1316,14 @@ namespace Box2D.NetStandard.Dynamics.World
                 var color = new Color(0.9f, 0.3f, 0.9f);
                 BroadPhase bp = m_contactManager.m_broadPhase;
 
-                for (Body b = m_bodyList; b != null; b = b.GetNext())
+                for (Body? b = m_bodyList; b != null; b = b.GetNext())
                 {
                     if (b.IsEnabled() == false)
                     {
                         continue;
                     }
 
-                    for (Fixture f = b.GetFixtureList(); f != null; f = f.GetNext())
+                    for (Fixture? f = b.GetFixtureList(); f != null; f = f.GetNext())
                         for (var i = 0; i < f.m_proxyCount; ++i)
                         {
                             FixtureProxy proxy = f.m_proxies[i];
@@ -1343,7 +1341,7 @@ namespace Box2D.NetStandard.Dynamics.World
 
             if ((flags & DrawFlags.CenterOfMass) == DrawFlags.CenterOfMass)
             {
-                for (Body b = m_bodyList; b != null; b = b.GetNext())
+                for (Body? b = m_bodyList; b != null; b = b.GetNext())
                 {
                     Transform xf = b.GetTransform();
                     xf.p = b.GetWorldCenter();
@@ -1362,7 +1360,7 @@ namespace Box2D.NetStandard.Dynamics.World
                         float radius = circle.m_radius;
                         Vector2 axis = Vector2.Transform(new Vector2(1.0f, 0.0f), xf.q); // Math.Mul(xf.q, new Vector2(1.0f, 0.0f));
 
-                        m_debugDraw.DrawSolidCircle(center, radius, axis, color);
+                        m_debugDraw!.DrawSolidCircle(center, radius, axis, color);
                     }
                     break;
 
@@ -1370,7 +1368,7 @@ namespace Box2D.NetStandard.Dynamics.World
                     {
                         Vector2 v1 = Math.Mul(xf, edge.m_vertex1);
                         Vector2 v2 = Math.Mul(xf, edge.m_vertex2);
-                        m_debugDraw.DrawSegment(v1, v2, color);
+                        m_debugDraw!.DrawSegment(v1, v2, color);
 
                         if (!edge.m_oneSided)
                         {
@@ -1386,7 +1384,7 @@ namespace Box2D.NetStandard.Dynamics.World
                         Vector2[] vertices = chain.m_vertices;
 
                         Vector2 v1 = Math.Mul(xf, vertices[0]);
-                        m_debugDraw.DrawPoint(v1, 4.0f, color);
+                        m_debugDraw!.DrawPoint(v1, 4.0f, color);
 
                         for (var i = 1; i < count; ++i)
                         {
@@ -1407,7 +1405,7 @@ namespace Box2D.NetStandard.Dynamics.World
                             vertices[i] = Math.Mul(xf, poly.m_vertices[i]);
                         }
 
-                        m_debugDraw.DrawSolidPolygon(vertices, vertexCount, color);
+                        m_debugDraw!.DrawSolidPolygon(vertices, vertexCount, color);
                     }
                     break;
             }

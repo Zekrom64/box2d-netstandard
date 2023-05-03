@@ -77,11 +77,11 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 
         internal float m_friction;
 
-        internal Manifold m_manifold = new Manifold();
-        internal Contact m_next;
+        internal Manifold m_manifold = new();
+        internal Contact? m_next;
 
         // World pool and list pointers.
-        internal Contact m_prev;
+        internal Contact? m_prev;
         internal float m_restitution;
 
         internal float m_tangentSpeed;
@@ -135,7 +135,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
             get => IsTouching();
         }
 
-        public Contact Next
+        public Contact? Next
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => GetNext();
@@ -231,7 +231,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
         public bool IsTouching() => (m_flags & CollisionFlags.Touching) == CollisionFlags.Touching;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Contact GetNext() => m_next;
+        public Contact? GetNext() => m_next;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Fixture GetFixtureA() => FixtureA;
@@ -318,7 +318,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
             })!;
         }
 
-        public void Update(ContactListener listener)
+        public void Update(ContactListener? listener)
         {
             Manifold oldManifold = m_manifold;
 
@@ -409,7 +409,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
             }
         }
 
-        private bool TestOverlap(in Shape shapeA, int indexA,
+        private static bool TestOverlap(in Shape shapeA, int indexA,
             in Shape shapeB, int indexB,
             in Transform xfA, in Transform xfB)
         {
@@ -420,10 +420,11 @@ namespace Box2D.NetStandard.Dynamics.Contacts
             input.transformB = xfB;
             input.useRadii = true;
 
-            var cache = new SimplexCache();
-            cache.count = 0;
+			var cache = new SimplexCache {
+				count = 0
+			};
 
-            Distance(out DistanceOutput output, cache, in input);
+			Distance(out DistanceOutput output, cache, in input);
 
             return output.distance < 10.0f * Settings.FLT_EPSILON;
         }
@@ -449,15 +450,14 @@ namespace Box2D.NetStandard.Dynamics.Contacts
             // These store the vertices of the last simplex so that we
             // can check for duplicates and prevent cycling.
             int[] saveA = new int[3], saveB = new int[3];
-            var saveCount = 0;
 
-            // Main iteration loop.
-            var iter = 0;
+			// Main iteration loop.
+			var iter = 0;
             while (iter < k_maxIters)
             {
-                // Copy simplex so we can identify duplicates.
-                saveCount = simplex.m_count;
-                for (var i = 0; i < saveCount; ++i)
+				// Copy simplex so we can identify duplicates.
+				int saveCount = simplex.m_count;
+				for (var i = 0; i < saveCount; ++i)
                 {
                     saveA[i] = vertices[i].indexA;
                     saveB[i] = vertices[i].indexB;
@@ -569,7 +569,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
             }
         }
 
-        public bool ShapeCast(out ShapeCastOutput output, in ShapeCastInput input)
+        public static bool ShapeCast(out ShapeCastOutput output, in ShapeCastInput input)
         {
             output.iterations = 0;
             output.lambda = 1.0f;
@@ -590,12 +590,13 @@ namespace Box2D.NetStandard.Dynamics.Contacts
             Vector2 n = Vector2.Zero;
             var lambda = 0.0f;
 
-            // Initial simplex
-            var simplex = new Simplex();
-            simplex.m_count = 0;
+			// Initial simplex
+			var simplex = new Simplex {
+				m_count = 0
+			};
 
-            // Get simplex vertices as an array.
-            SimplexVertex[] vertices = simplex.m_v;
+			// Get simplex vertices as an array.
+			SimplexVertex[] vertices = simplex.m_v;
 
             // Get support point in -r direction
             int indexA = proxyA.GetSupport(Math.MulT(xfA.q, -r));
@@ -692,8 +693,8 @@ namespace Box2D.NetStandard.Dynamics.Contacts
                 ++iter;
             }
 
-            // Prepare output.
-            simplex.GetWitnessPoints(out Vector2 pointB, out Vector2 pointA);
+			// Prepare output.
+			simplex.GetWitnessPoints(out _, out Vector2 pointA);
 
             if (v.LengthSquared() > 0.0f)
             {

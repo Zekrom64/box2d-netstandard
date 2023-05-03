@@ -210,20 +210,22 @@ namespace Box2D.NetStandard.Collision
                 }
             }
 
-            // Get polygonB in frameA
-            var m_polygonB = new TempPolygon();
-            m_polygonB.count = polygonB.m_count;
-            for (var i = 0; i < polygonB.m_count; ++i)
+			// Get polygonB in frameA
+			var m_polygonB = new TempPolygon {
+				count = polygonB.m_count
+			};
+			for (var i = 0; i < polygonB.m_count; ++i)
             {
                 m_polygonB.vertices[i] = Math.Mul(xf, polygonB.m_vertices[i]);
                 m_polygonB.normals[i] = Vector2.Transform(polygonB.m_normals[i], xf.q);
             }
 
             float m_radius = polygonB.m_radius + edgeA.m_radius;
-            manifold = new Manifold();
-            manifold.pointCount = 0;
+			manifold = new Manifold {
+				pointCount = 0
+			};
 
-            EPAxis edgeAxis = ComputeEdgeSeparation(front, m_polygonB, normal, v1);
+			EPAxis edgeAxis = ComputeEdgeSeparation(front, m_polygonB, normal, v1);
 
             // If no valid normal can be found than this edge should not collide.
             if (edgeAxis.type == EPAxis.AxisType.Unknown || edgeAxis.separation > m_radius)

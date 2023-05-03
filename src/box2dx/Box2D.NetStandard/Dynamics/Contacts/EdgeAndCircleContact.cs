@@ -25,6 +25,8 @@
 // SOFTWARE.
 */
 
+using System;
+using System.Diagnostics;
 using System.Numerics;
 using Box2D.NetStandard.Collision;
 using Box2D.NetStandard.Collision.Shapes;
@@ -45,11 +47,12 @@ namespace Box2D.NetStandard.Dynamics.Contacts
             //Debug.Assert(fixtureA.Type == ShapeType.Edge);
             //Debug.Assert(fixtureB.Type == ShapeType.Circle);
             m_manifold.pointCount = 0;
-            m_manifold.points[0] = new ManifoldPoint();
-            m_manifold.points[0].normalImpulse = 0.0f;
-            m_manifold.points[0].tangentImpulse = 0.0f;
+			m_manifold.points[0] = new ManifoldPoint {
+				normalImpulse = 0.0f,
+				tangentImpulse = 0.0f
+			};
 
-            edgeA = m_fixtureA.Shape is EdgeShape ? (EdgeShape)m_fixtureA.Shape : null;
+			edgeA = m_fixtureA.Shape is EdgeShape shape ? shape : throw new InvalidOperationException();
             circleB = (CircleShape)m_fixtureB.Shape;
         }
 
@@ -59,7 +62,7 @@ namespace Box2D.NetStandard.Dynamics.Contacts
 
             //manifold.pointCount = 0;
 
-            Vector2 Q = Math.MulT(xfA, Math.Mul(xfB, circleB.m_p));
+            Vector2 Q = Common.Math.MulT(xfA, Common.Math.Mul(xfB, circleB.m_p));
 
             Vector2 A = edgeA.m_vertex1, B = edgeA.m_vertex2;
             Vector2 e = B - A;

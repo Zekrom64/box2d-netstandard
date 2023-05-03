@@ -39,24 +39,26 @@ namespace Box2D.NetStandard.Dynamics.Bodies
         ///  Set this flag to false if this body should never fall asleep. Note that
         ///  this increases CPU usage.
         /// </summary>
-        public bool allowSleep;
+        public bool AllowSleep;
 
         /// <summary>
         ///  The world angle of the body in radians.
         /// </summary>
-        public float angle;
+        public float Angle;
 
         /// <summary>
         ///  Angular damping is use to reduce the angular velocity. The damping parameter
         ///  can be larger than 1.0f but the damping effect becomes sensitive to the
         ///  time step when the damping parameter is large.
         /// </summary>
-        public float angularDamping;
+        public float AngularDamping;
 
-        // The angular velocity of the body.
-        public float angularVelocity;
+        /// <summary>
+		/// The angular velocity of the body.
+		/// </summary>
+        public float AngularVelocity;
 
-        public bool awake;
+        public bool Awake;
 
         /// <summary>
         ///  Is this a fast moving body that should be prevented from tunneling through
@@ -64,59 +66,59 @@ namespace Box2D.NetStandard.Dynamics.Bodies
         ///  static bodies.
         ///  @warning You should use this flag sparingly since it increases processing time.
         /// </summary>
-        public bool bullet;
+        public bool Bullet;
 
-        public bool enabled;
+        public bool Enabled;
 
         /// <summary>
         ///  Should this body be prevented from rotating? Useful for characters.
         /// </summary>
-        public bool fixedRotation;
+        public bool FixedRotation;
 
-        public float gravityScale;
+        public float GravityScale;
 
         /// <summary>
         ///  Linear damping is use to reduce the linear velocity. The damping parameter
         ///  can be larger than 1.0f but the damping effect becomes sensitive to the
         ///  time step when the damping parameter is large.
         /// </summary>
-        public float linearDamping;
+        public float LinearDamping;
 
         /// The linear velocity of the body in world co-ordinates.
-        public Vector2 linearVelocity;
+        public Vector2 LinearVelocity;
 
         /// <summary>
         ///  The world position of the body. Avoid creating bodies at the origin
         ///  since this can lead to many overlapping shapes.
         /// </summary>
-        public Vector2 position;
+        public Vector2 Position;
 
-        public BodyType type;
+        public BodyType Type;
 
         /// <summary>
         ///  Use this to store application specific body data.
         /// </summary>
-        public object userData;
+        public object? UserData;
 
         /// <summary>
         ///  This constructor sets the body definition default values.
         /// </summary>
         public BodyDef()
         {
-            userData = null;
-            position = Vector2.Zero;
-            angle = 0.0f;
-            linearVelocity = Vector2.Zero;
-            angularVelocity = 0.0f;
-            linearDamping = 0.0f;
-            angularDamping = 0.0f;
-            allowSleep = true;
-            awake = true;
-            fixedRotation = false;
-            bullet = false;
-            type = BodyType.Static;
-            enabled = true;
-            gravityScale = 1.0f;
+            UserData = null;
+            Position = Vector2.Zero;
+            Angle = 0.0f;
+            LinearVelocity = Vector2.Zero;
+            AngularVelocity = 0.0f;
+            LinearDamping = 0.0f;
+            AngularDamping = 0.0f;
+            AllowSleep = true;
+            Awake = true;
+            FixedRotation = false;
+            Bullet = false;
+            Type = BodyType.Static;
+            Enabled = true;
+            GravityScale = 1.0f;
         }
     }
 }

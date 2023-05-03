@@ -1,4 +1,5 @@
 using Box2D.NetStandard.Dynamics.Bodies;
+using System;
 
 namespace Box2D.NetStandard.Dynamics.Joints
 {
@@ -11,24 +12,46 @@ namespace Box2D.NetStandard.Dynamics.Joints
     /// </summary>
     public class JointEdge
     {
-        /// <summary>
-        ///  The joint.
-        /// </summary>
-        public Joint joint;
+		private Joint? joint;
 
-        /// <summary>
-        ///  The next joint edge in the body's joint list.
-        /// </summary>
-        public JointEdge next;
+		/// <summary>
+		///  The joint.
+		/// </summary>
+		public Joint Joint {
+			get {
+#if DEBUG
+				return joint ?? throw new InvalidOperationException();
+#else
+				return joint!;
+#endif
+			}
+			set => joint = value;
+		}
+
+		/// <summary>
+		///  The next joint edge in the body's joint list.
+		/// </summary>
+		public JointEdge? Next;
+
+		private Body? body;
 
         /// <summary>
         ///  Provides quick access to the other body attached.
         /// </summary>
-        public Body other;
+        public Body Other {
+			get {
+#if DEBUG
+				return body ?? throw new InvalidOperationException();
+#else
+				return body!;
+#endif
+			}
+			set => body = value;
+		}
 
-        /// <summary>
-        ///  The previous joint edge in the body's joint list.
-        /// </summary>
-        public JointEdge Prev;
+		/// <summary>
+		///  The previous joint edge in the body's joint list.
+		/// </summary>
+		public JointEdge? Prev;
     }
 }

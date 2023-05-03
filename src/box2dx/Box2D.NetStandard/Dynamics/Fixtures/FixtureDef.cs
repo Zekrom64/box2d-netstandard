@@ -38,33 +38,33 @@ namespace Box2D.NetStandard.Dynamics.Fixtures
         /// <summary>
         ///  The density, usually in kg/m^2.
         /// </summary>
-        public float density;
+        public float Density;
 
         /// <summary>
         ///  Contact filtering data.
         /// </summary>
-        public Filter filter = new Filter();
+        public Filter Filter = new();
 
         /// <summary>
         ///  The friction coefficient, usually in the range [0,1].
         /// </summary>
-        public float friction = 0.2f;
+        public float Friction = 0.2f;
 
         /// <summary>
         ///  A sensor shape collects contact information but never generates a collision response.
         /// </summary>
-        public bool isSensor;
+        public bool IsSensor;
 
         /// <summary>
         ///  The restitution (elasticity) usually in the range [0,1].
         /// </summary>
-        public float restitution;
+        public float Restitution;
 
-        public Shape shape;
+        public required Shape Shape;
 
         /// <summary>
         ///  Use this to store application specific fixture data.
         /// </summary>
-        public object userData;
+        public object? UserData;
     }
 }

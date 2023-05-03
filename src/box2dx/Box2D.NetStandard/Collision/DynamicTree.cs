@@ -53,7 +53,7 @@ namespace Box2D.NetStandard.Collision
 			public Proxy Child1;
 			public Proxy Child2;
 
-			public object UserData;
+			public object? UserData;
 
 			public int Height;
 			public bool Moved;
@@ -360,7 +360,7 @@ namespace Box2D.NetStandard.Collision
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public object GetUserData(Proxy proxy)
+		public object? GetUserData(Proxy proxy)
 		{
 			return _nodes[proxy].UserData;
 		}

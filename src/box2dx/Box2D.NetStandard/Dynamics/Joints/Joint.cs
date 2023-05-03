@@ -51,8 +51,8 @@ namespace Box2D.NetStandard.Dynamics.Joints
 	public abstract class Joint
 	{
 		internal readonly bool m_collideConnected;
-		internal readonly JointEdge m_edgeA = new JointEdge();
-		internal readonly JointEdge m_edgeB = new JointEdge();
+		internal readonly JointEdge m_edgeA = new();
+		internal readonly JointEdge m_edgeB = new();
 		internal Body m_bodyA;
 		internal Body m_bodyB;
 		protected float m_invMass1, m_invI1;
@@ -62,16 +62,16 @@ namespace Box2D.NetStandard.Dynamics.Joints
 
 		// Cache here per time step to reduce cache misses.
 		protected Vector2 m_localCenter1, m_localCenter2;
-		internal Joint m_next;
-		internal Joint m_prev;
+		internal Joint? m_next;
+		internal Joint? m_prev;
 
 		protected Joint(JointDef def)
 		{
 			m_prev = null;
 			m_next = null;
-			m_bodyA = def.bodyA;
-			m_bodyB = def.bodyB;
-			m_collideConnected = def.collideConnected;
+			m_bodyA = def.BodyA;
+			m_bodyB = def.BodyB;
+			m_collideConnected = def.CollideConnected;
 			m_islandFlag = false;
 			UserData = def.UserData;
 		}
@@ -92,7 +92,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		///  Get/Set the user data pointer.
 		/// </summary>
 		/// <returns></returns>
-		public object UserData
+		public object? UserData
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get;
@@ -189,7 +189,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		/// </summary>
 		/// <returns></returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Joint GetNext() => m_next;
+		public Joint? GetNext() => m_next;
 
 		internal static Joint Create(JointDef def)
 		{
@@ -215,7 +215,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 		internal abstract bool SolvePositionConstraints(in SolverData data);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		internal void ComputeXForm(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
+		internal static void ComputeXForm(ref Transform xf, Vector2 center, Vector2 localCenter, float angle)
 		{
 			xf.q = Matrex.CreateRotation(angle);                  // Actually about twice as fast to use our own function
 			xf.p = center - Vector2.Transform(localCenter, xf.q); // Math.Mul(xf.q, localCenter);
@@ -234,7 +234,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 
 			switch (this)
 			{
-				case DistanceJoint j:
+				case DistanceJoint:
 					draw.DrawSegment(p1, p2, color);
 					break;
 				case PulleyJoint pulley: {
@@ -246,7 +246,7 @@ namespace Box2D.NetStandard.Dynamics.Joints
 				}
 					break;
 
-				case MouseJoint j: {
+				case MouseJoint: {
 					var c = new Color();
 					c.Set(0.0f, 1.0f, 0.0f);
 					draw.DrawPoint(p1, 4.0f, c);

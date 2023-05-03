@@ -39,19 +39,19 @@ namespace Box2D.NetStandard.Collision
 
         public Simplex() => m_v = new SimplexVertex[3];
 
-        private SimplexVertex m_v1
+        private SimplexVertex V1
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => m_v[0];
         }
 
-        private SimplexVertex m_v2
+        private SimplexVertex V2
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => m_v[1];
         }
 
-        private SimplexVertex m_v3
+        private SimplexVertex V3
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => m_v[2];
@@ -129,12 +129,12 @@ namespace Box2D.NetStandard.Collision
             switch (m_count)
             {
                 case 1:
-                    return -m_v1.w;
+                    return -V1.w;
 
                 case 2:
                     {
-                        Vector2 e12 = m_v2.w - m_v1.w;
-                        float sgn = Vectex.Cross(e12, -m_v1.w);
+                        Vector2 e12 = V2.w - V1.w;
+                        float sgn = Vectex.Cross(e12, -V1.w);
 
                         return sgn > 0.0f ? Vectex.Cross(1.0f, e12) : Vectex.Cross(e12, 1.0f);
                     }
@@ -148,22 +148,14 @@ namespace Box2D.NetStandard.Collision
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal Vector2 GetClosestPoint()
         {
-            switch (m_count)
-            {
-                case 0:
-                    //Debug.Assert(false);
-                    return Vector2.Zero;
-                case 1:
-                    return m_v1.w;
-                case 2:
-                    return m_v1.a * m_v1.w + m_v2.a * m_v2.w;
-                case 3:
-                    return Vector2.Zero;
-                default:
-                    //Debug.Assert(false);
-                    return Vector2.Zero;
-            }
-        }
+			return m_count switch {
+				0 => Vector2.Zero,//Debug.Assert(false);
+				1 => V1.w,
+				2 => V1.a * V1.w + V2.a * V2.w,
+				3 => Vector2.Zero,
+				_ => Vector2.Zero,//Debug.Assert(false);
+			};
+		}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void GetWitnessPoints(out Vector2 pA, out Vector2 pB)
@@ -171,17 +163,17 @@ namespace Box2D.NetStandard.Collision
             switch (m_count)
             {
                 case 1:
-                    pA = m_v1.wA;
-                    pB = m_v1.wB;
+                    pA = V1.wA;
+                    pB = V1.wB;
                     break;
 
                 case 2:
-                    pA = m_v1.a * m_v1.wA + m_v2.a * m_v2.wA;
-                    pB = m_v1.a * m_v1.wB + m_v2.a * m_v2.wB;
+                    pA = V1.a * V1.wA + V2.a * V2.wA;
+                    pB = V1.a * V1.wB + V2.a * V2.wB;
                     break;
 
                 case 3:
-                    pA = m_v1.a * m_v1.wA + m_v2.a * m_v2.wA + m_v3.a * m_v3.wA;
+                    pA = V1.a * V1.wA + V2.a * V2.wA + V3.a * V3.wA;
                     pB = pA;
                     break;
                 case 0:
@@ -195,22 +187,13 @@ namespace Box2D.NetStandard.Collision
 
         private float GetMetric()
         {
-            switch (m_count)
-            {
-                case 1:
-                    return 0.0f;
-
-                case 2:
-                    return Vector2.Distance(m_v1.w, m_v2.w);
-
-                case 3:
-                    return Vectex.Cross(m_v2.w - m_v1.w, m_v3.w - m_v1.w);
-                case 0:
-                default:
-                    //Debug.Assert(false);
-                    return 0.0f;
-            }
-        }
+			return m_count switch {
+				1 => 0.0f,
+				2 => Vector2.Distance(V1.w, V2.w),
+				3 => Vectex.Cross(V2.w - V1.w, V3.w - V1.w),
+				_ => 0.0f,//Debug.Assert(false);
+			};
+		}
 
         // Solve a line segment using barycentric coordinates.
         //
@@ -238,8 +221,8 @@ namespace Box2D.NetStandard.Collision
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Solve2()
         {
-            Vector2 w1 = m_v1.w;
-            Vector2 w2 = m_v2.w;
+            Vector2 w1 = V1.w;
+            Vector2 w2 = V2.w;
             Vector2 e12 = w2 - w1;
 
             // w1 region
@@ -278,9 +261,9 @@ namespace Box2D.NetStandard.Collision
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Solve3()
         {
-            Vector2 w1 = m_v1.w;
-            Vector2 w2 = m_v2.w;
-            Vector2 w3 = m_v3.w;
+            Vector2 w1 = V1.w;
+            Vector2 w2 = V2.w;
+            Vector2 w3 = V3.w;
 
             // Edge12
             // [1      1     ][a1] = [1]

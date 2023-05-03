@@ -16,54 +16,54 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
         /// <summary>
         ///  Enable/disable the joint limit.
         /// </summary>
-        public bool enableLimit;
+        public bool EnableLimit;
 
         /// <summary>
         ///  Enable/disable the joint motor.
         /// </summary>
-        public bool enableMotor;
+        public bool EnableMotor;
 
         /// <summary>
         ///  The local anchor point relative to body1's origin.
         /// </summary>
-        public Vector2 localAnchorA;
+        public Vector2 LocalAnchorA;
 
         /// <summary>
         ///  The local anchor point relative to body2's origin.
         /// </summary>
-        public Vector2 localAnchorB;
+        public Vector2 LocalAnchorB;
 
         /// <summary>
         ///  The local translation axis in body1.
         /// </summary>
-        public Vector2 localAxisA;
+        public Vector2 LocalAxisA;
 
         /// <summary>
         ///  The lower translation limit, usually in meters.
         /// </summary>
-        public float lowerTranslation;
+        public float LowerTranslation;
 
         /// <summary>
         ///  The maximum motor torque, usually in N-m.
         /// </summary>
-        public float maxMotorForce;
+        public float MaxMotorForce;
 
         /// <summary>
         ///  The desired motor speed in radians per second.
         /// </summary>
-        public float motorSpeed;
+        public float MotorSpeed;
 
         /// <summary>
         ///  The constrained angle between the bodies: body2_angle - body1_angle.
         /// </summary>
-        public float referenceAngle;
+        public float ReferenceAngle;
 
         /// <summary>
         ///  The upper translation limit, usually in meters.
         /// </summary>
-        public float upperTranslation;
+        public float UpperTranslation;
 
-        public PrismaticJointDef() => localAxisA = new Vector2(1.0f, 0.0f);
+        public PrismaticJointDef() => LocalAxisA = new Vector2(1.0f, 0.0f);
 
         /// <summary>
         ///  Initialize the bodies, anchors, axis, and reference angle using the world
@@ -71,12 +71,12 @@ namespace Box2D.NetStandard.Dynamics.Joints.Prismatic
         /// </summary>
         public void Initialize(Body body1, Body body2, Vector2 anchor, Vector2 axis)
         {
-            bodyA = body1;
-            bodyB = body2;
-            localAnchorA = body1.GetLocalPoint(anchor);
-            localAnchorB = body2.GetLocalPoint(anchor);
-            localAxisA = body1.GetLocalVector(axis);
-            referenceAngle = body2.GetAngle() - body1.GetAngle();
+            BodyA = body1;
+            BodyB = body2;
+            LocalAnchorA = body1.GetLocalPoint(anchor);
+            LocalAnchorB = body2.GetLocalPoint(anchor);
+            LocalAxisA = body1.GetLocalVector(axis);
+            ReferenceAngle = body2.GetAngle() - body1.GetAngle();
         }
     }
 }

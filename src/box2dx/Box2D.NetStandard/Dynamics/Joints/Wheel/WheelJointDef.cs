@@ -6,28 +6,28 @@ namespace Box2D.NetStandard.Dynamics.Joints.Wheel
 {
     public class WheelJointDef : JointDef
     {
-        public float damping;
+        public float Damping;
 
-        public bool enableLimit;
-        public bool enableMotor;
+        public bool EnableLimit;
+        public bool EnableMotor;
 
-        public Vector2 localAnchorA;
-        public Vector2 localAnchorB;
-        public Vector2 localAxisA;
-        public float lowerTranslation;
-        public float maxMotorTorque;
-        public float motorSpeed;
+        public Vector2 LocalAnchorA;
+        public Vector2 LocalAnchorB;
+        public Vector2 LocalAxisA;
+        public float LowerTranslation;
+        public float MaxMotorTorque;
+        public float MotorSpeed;
 
-        public float stiffness;
-        public float upperTranslation;
+        public float Stiffness;
+        public float UpperTranslation;
 
         public void Initialize(Body bA, Body bB, in Vector2 anchor, in Vector2 axis)
         {
-            bodyA = bA;
-            bodyB = bB;
-            localAnchorA = bodyA.GetLocalPoint(anchor);
-            localAnchorB = bodyB.GetLocalPoint(anchor);
-            localAxisA = bodyA.GetLocalVector(axis);
+            BodyA = bA;
+            BodyB = bB;
+            LocalAnchorA = BodyA.GetLocalPoint(anchor);
+            LocalAnchorB = BodyB.GetLocalPoint(anchor);
+            LocalAxisA = BodyA.GetLocalVector(axis);
         }
     }
 }

@@ -13,12 +13,12 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear
         /// <summary>
         ///  The first revolute/prismatic joint attached to the gear joint.
         /// </summary>
-        public Joint Joint1;
+        public required Joint Joint1;
 
         /// <summary>
         ///  The second revolute/prismatic joint attached to the gear joint.
         /// </summary>
-        public Joint Joint2;
+        public required Joint Joint2;
 
         /// <summary>
         ///  The gear ratio.

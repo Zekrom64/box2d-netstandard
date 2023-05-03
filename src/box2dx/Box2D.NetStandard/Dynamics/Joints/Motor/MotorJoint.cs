@@ -35,12 +35,12 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor
 
         internal MotorJoint(in MotorJointDef def) : base(def)
         {
-            m_linearOffset = def.linearOffset;
-            m_angularOffset = def.angularOffset;
+            m_linearOffset = def.LinearOffset;
+            m_angularOffset = def.AngularOffset;
 
-            m_maxForce = def.maxForce;
-            m_maxTorque = def.maxTorque;
-            m_correctionFactor = def.correctionFactor;
+            m_maxForce = def.MaxForce;
+            m_maxTorque = def.MaxTorque;
+            m_correctionFactor = def.CorrectionFactor;
         }
 
         public override Vector2 GetAnchorA => m_bodyA.GetPosition();
@@ -134,7 +134,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor
             Vector2 vB = data.velocities[m_indexB].v;
             float wB = data.velocities[m_indexB].w;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB);
+            Rot qA = new(aA), qB = new(aB);
 
             // Compute the effective mass matrix.
             m_rA = Math.Mul(qA, m_linearOffset - m_localCenterA);
@@ -151,11 +151,12 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor
             float mA = m_invMassA, mB = m_invMassB;
             float iA = m_invIA, iB = m_invIB;
 
-            // Upper 2 by 2 of K for point to point
-            var K = new Matrix3x2();
-            K.M11 = mA + mB + iA * m_rA.Y * m_rA.Y + iB * m_rB.Y * m_rB.Y;
-            K.M21 = -iA * m_rA.X * m_rA.Y - iB * m_rB.X * m_rB.Y;
-            K.M12 = K.M21;
+			// Upper 2 by 2 of K for point to point
+			var K = new Matrix3x2 {
+				M11 = mA + mB + iA * m_rA.Y * m_rA.Y + iB * m_rB.Y * m_rB.Y,
+				M21 = -iA * m_rA.X * m_rA.Y - iB * m_rB.X * m_rB.Y
+			};
+			K.M12 = K.M21;
             K.M22 = mA + mB + iA * m_rA.X * m_rA.X + iB * m_rB.X * m_rB.X;
 
             /*Matrix3x2*/

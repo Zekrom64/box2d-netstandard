@@ -75,7 +75,7 @@ namespace Box2D.NetStandard.Collision
 
         /// Get the perimeter length
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal float GetPerimeter()
+		public float GetPerimeter()
         {
             float wx = upperBound.X - lowerBound.X;
             float wy = upperBound.Y - lowerBound.Y;
@@ -84,7 +84,7 @@ namespace Box2D.NetStandard.Collision
 
         /// Combine an AABB into this one.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void Combine(in AABB aabb)
+		public void Combine(in AABB aabb)
         {
             lowerBound = Vector2.Min(lowerBound, aabb.lowerBound);
             upperBound = Vector2.Max(upperBound, aabb.upperBound);
@@ -92,7 +92,7 @@ namespace Box2D.NetStandard.Collision
 
         /// Combine two AABBs into this one.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static AABB Combine(in AABB aabb1, in AABB aabb2)
+		public static AABB Combine(in AABB aabb1, in AABB aabb2)
         {
             AABB result = default;
             result.lowerBound = Vector2.Min(aabb1.lowerBound, aabb2.lowerBound);
@@ -100,13 +100,13 @@ namespace Box2D.NetStandard.Collision
             return result;
         }
 
-        internal AABB Enlarged(float amount)
+		public AABB Enlarged(float amount)
         {
-            Vector2 vecAmt = new Vector2(amount);
+            Vector2 vecAmt = new(amount);
             return new AABB(lowerBound - vecAmt, upperBound + vecAmt);
         }
 
-        internal bool Intersects(in AABB other)
+		public bool Intersects(in AABB other)
         {
             return other.lowerBound.Y <= this.upperBound.Y &&
                    other.upperBound.Y >= this.lowerBound.Y &&
@@ -116,7 +116,7 @@ namespace Box2D.NetStandard.Collision
 
         /// Does this aabb contain the provided AABB.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal bool Contains(in AABB aabb)
+        public bool Contains(in AABB aabb)
         {
             var result = true;
             result = result && lowerBound.X <= aabb.lowerBound.X;
@@ -126,7 +126,7 @@ namespace Box2D.NetStandard.Collision
             return result;
         }
 
-        private bool RayCast(out RayCastOutput output, in RayCastInput input)
+        public bool RayCast(out RayCastOutput output, in RayCastInput input)
         {
             output = default;
             float tmin = float.MinValue;
@@ -195,7 +195,7 @@ namespace Box2D.NetStandard.Collision
             return true;
         }
 
-        private bool IsValid()
+        public bool IsValid()
         {
             Vector2 d = upperBound - lowerBound;
             bool valid = d.X >= 0.0f && d.Y >= 0.0f;

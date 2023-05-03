@@ -162,7 +162,7 @@ namespace Box2D.NetStandard.Dynamics.World
         internal readonly int m_contactCapacity;
         private readonly Contact[] m_contacts;
         private readonly Joint[] m_joints;
-        private readonly ContactListener m_listener;
+        private readonly ContactListener? m_listener;
 
         private readonly Position[] m_positions;
         private readonly Velocity[] m_velocities;
@@ -173,7 +173,7 @@ namespace Box2D.NetStandard.Dynamics.World
         internal int m_contactCount;
         private int m_jointCount;
 
-        public Island(int bodyCapacity, int contactCapacity, int jointCapacity, ContactListener listener)
+        public Island(int bodyCapacity, int contactCapacity, int jointCapacity, ContactListener? listener)
         {
             m_bodyCapacity = bodyCapacity;
             m_contactCapacity = contactCapacity;
@@ -236,14 +236,15 @@ namespace Box2D.NetStandard.Dynamics.World
                 m_velocities[i].w = w;
             }
 
-            // Solver data
-            var solverData = new SolverData();
-            solverData.step = step;
-            solverData.positions = m_positions;
-            solverData.velocities = m_velocities;
+			// Solver data
+			var solverData = new SolverData {
+				step = step,
+				positions = m_positions,
+				velocities = m_velocities
+			};
 
-            // Initialize velocity constraints.
-            ContactSolverDef contactSolverDef;
+			// Initialize velocity constraints.
+			ContactSolverDef contactSolverDef;
             contactSolverDef.step = step;
             contactSolverDef.contacts = m_contacts;
             contactSolverDef.count = m_contactCount;
@@ -399,15 +400,16 @@ namespace Box2D.NetStandard.Dynamics.World
             }
 
 
-            var contactSolverDef = new ContactSolverDef();
-            contactSolverDef.contacts = m_contacts;
-            contactSolverDef.count = m_contactCount;
-            contactSolverDef.step = subStep;
-            contactSolverDef.positions = m_positions;
-            contactSolverDef.velocities = m_velocities;
+			var contactSolverDef = new ContactSolverDef {
+				contacts = m_contacts,
+				count = m_contactCount,
+				step = subStep,
+				positions = m_positions,
+				velocities = m_velocities
+			};
 
-            //ContactSolver contactSolver = new ContactSolver(subStep, _contacts, _contactCount);
-            var contactSolver = new ContactSolver(contactSolverDef);
+			//ContactSolver contactSolver = new ContactSolver(subStep, _contacts, _contactCount);
+			var contactSolver = new ContactSolver(contactSolverDef);
 
             for (var i = 0; i < subStep.positionIterations; ++i)
             {

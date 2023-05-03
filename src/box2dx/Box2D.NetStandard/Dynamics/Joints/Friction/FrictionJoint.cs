@@ -32,11 +32,11 @@ namespace Box2D.NetStandard.Dynamics.Joints.Friction
 
         internal FrictionJoint(in FrictionJointDef def) : base(def)
         {
-            m_localAnchorA = def.localAnchorA;
-            m_localAnchorB = def.localAnchorB;
+            m_localAnchorA = def.LocalAnchorA;
+            m_localAnchorB = def.LocalAnchorB;
 
-            m_maxForce = def.maxForce;
-            m_maxTorque = def.maxTorque;
+            m_maxForce = def.MaxForce;
+            m_maxTorque = def.MaxTorque;
         }
 
         public Vector2 GetLocalAnchorA
@@ -102,7 +102,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Friction
             Vector2 vB = data.velocities[m_indexB].v;
             float wB = data.velocities[m_indexB].w;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB);
+            Rot qA = new(aA), qB = new(aB);
 
             // Compute the effective mass matrix.
             m_rA = Math.Mul(qA, m_localAnchorA - m_localCenterA);
@@ -120,10 +120,11 @@ namespace Box2D.NetStandard.Dynamics.Joints.Friction
             float mA = m_invMassA, mB = m_invMassB;
             float iA = m_invIA, iB = m_invIB;
 
-            var K = new Matrix3x2();
-            K.M11 = mA + mB + iA * m_rA.Y * m_rA.Y + iB * m_rB.Y * m_rB.Y;
-            K.M21 = -iA * m_rA.X * m_rA.Y - iB * m_rB.X * m_rB.Y;
-            K.M12 = K.M21;
+			var K = new Matrix3x2 {
+				M11 = mA + mB + iA * m_rA.Y * m_rA.Y + iB * m_rB.Y * m_rB.Y,
+				M21 = -iA * m_rA.X * m_rA.Y - iB * m_rB.X * m_rB.Y
+			};
+			K.M12 = K.M21;
             K.M22 = mA + mB + iA * m_rA.X * m_rA.X + iB * m_rB.X * m_rB.X;
 
             /*Matrix3x2*/

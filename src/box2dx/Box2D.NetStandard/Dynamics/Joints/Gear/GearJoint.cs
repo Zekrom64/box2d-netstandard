@@ -242,7 +242,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear
             Vector2 vD = data.velocities[m_indexD].v;
             float wD = data.velocities[m_indexD].w;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB), qC = new Rot(aC), qD = new Rot(aD);
+            Rot qA = new(aA), qB = new(aB), qC = new(aC), qD = new(aD);
 
             m_mass = 0.0f;
 
@@ -358,7 +358,7 @@ namespace Box2D.NetStandard.Dynamics.Joints.Gear
             Vector2 cD = data.positions[m_indexD].c;
             float aD = data.positions[m_indexD].a;
 
-            Rot qA = new Rot(aA), qB = new Rot(aB), qC = new Rot(aC), qD = new Rot(aD);
+            Rot qA = new(aA), qB = new(aB), qC = new(aC), qD = new(aD);
 
             var linearError = 0.0f;
 

@@ -39,12 +39,14 @@ namespace Box2D.NetStandard.Collision
         internal int _count;
         internal float _radius;
 
+		/*
         private void Set(in Vector2[] vertices, int count, float radius)
         {
             _vertices = vertices;
             _count = count;
             _radius = radius;
         }
+		*/
 
         internal void Set(in Shape shape, in int index)
         {
@@ -84,7 +86,7 @@ namespace Box2D.NetStandard.Collision
                     break;
 
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(shape));
             }
         }
 

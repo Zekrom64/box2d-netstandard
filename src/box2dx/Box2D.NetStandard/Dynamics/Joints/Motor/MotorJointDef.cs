@@ -6,38 +6,38 @@ namespace Box2D.NetStandard.Dynamics.Joints.Motor
     public class MotorJointDef : JointDef
     {
         /// The bodyB angle minus bodyA angle in radians.
-        public float angularOffset;
+        public float AngularOffset;
 
         /// Position correction factor in the range [0,1].
-        public float correctionFactor;
+        public float CorrectionFactor;
 
         /// Position of bodyB minus the position of bodyA, in bodyA's frame, in meters.
-        public Vector2 linearOffset;
+        public Vector2 LinearOffset;
 
         /// The maximum motor force in N.
-        public float maxForce;
+        public float MaxForce;
 
         /// The maximum motor torque in N-m.
-        public float maxTorque;
+        public float MaxTorque;
 
         private MotorJointDef()
         {
-            maxForce = 1.0f;
-            maxTorque = 1.0f;
-            correctionFactor = 0.3f;
+            MaxForce = 1.0f;
+            MaxTorque = 1.0f;
+            CorrectionFactor = 0.3f;
         }
 
         /// Initialize the bodies and offsets using the current transforms.
         public void Initialize(Body bA, Body bB)
         {
-            bodyA = bA;
-            bodyB = bB;
-            Vector2 xB = bodyB.GetPosition();
-            linearOffset = bodyA.GetLocalPoint(xB);
+            BodyA = bA;
+            BodyB = bB;
+            Vector2 xB = BodyB.GetPosition();
+            LinearOffset = BodyA.GetLocalPoint(xB);
 
-            float angleA = bodyA.GetAngle();
-            float angleB = bodyB.GetAngle();
-            angularOffset = angleB - angleA;
+            float angleA = BodyA.GetAngle();
+            float angleB = BodyB.GetAngle();
+            AngularOffset = angleB - angleA;
         }
     }
 }

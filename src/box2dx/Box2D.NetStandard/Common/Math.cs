@@ -38,7 +38,7 @@ namespace Box2D.NetStandard.Common
         internal const byte UCHAR_MAX = byte.MaxValue;
         internal const int RAND_LIMIT = 32767;
 
-        private static readonly Random s_rnd = new Random();
+        private static readonly Random s_rnd = new();
 
         /// <summary>
         ///  This function is used to ensure that a floating point number is
@@ -59,7 +59,7 @@ namespace Box2D.NetStandard.Common
             float xhalf = 0.5f * x;
             convert.i = 0x5f3759df - (convert.i >> 1);
             x = convert.x;
-            x = x * (1.5f - xhalf * x * x);
+            x *= (1.5f - xhalf * x * x);
             return x;
         }
 
@@ -175,10 +175,10 @@ namespace Box2D.NetStandard.Common
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static Vector2 Mul(Rot q, Vector2 v) => new Vector2(q.c * v.X - q.s * v.Y, q.s * v.X + q.c * v.Y);
+        internal static Vector2 Mul(Rot q, Vector2 v) => new(q.c * v.X - q.s * v.Y, q.s * v.X + q.c * v.Y);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static Vector2 MulT(Rot q, Vector2 v) => new Vector2(q.c * v.X + q.s * v.Y, -q.s * v.X + q.c * v.Y);
+        internal static Vector2 MulT(Rot q, Vector2 v) => new(q.c * v.X + q.s * v.Y, -q.s * v.X + q.c * v.Y);
 
 
         // v2 = A.q.Rot(B.q.Rot(v1) + B.p) + A.p
@@ -205,7 +205,7 @@ namespace Box2D.NetStandard.Common
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static Vector2 Mul22(in Mat33 A, in Vector2 v) =>
-            new Vector2(A.ex.X * v.X + A.ey.X * v.X, A.ex.Y * v.X + A.ey.Y * v.Y);
+            new(A.ex.X * v.X + A.ey.X * v.X, A.ex.Y * v.X + A.ey.Y * v.Y);
 
         [StructLayout(LayoutKind.Explicit)]
         internal struct Convert

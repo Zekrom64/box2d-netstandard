@@ -29,19 +29,19 @@ namespace Box2D.NetStandard.Common
         }
 
         /// Set to the identity rotation
-        private void SetIdentity()
+        public void SetIdentity()
         {
             s = 0.0f;
             c = 1.0f;
         }
 
-        /// Get the angle in radians
-        private float GetAngle() => MathF.Atan2(s, c);
+		/// Get the angle in radians
+		public float GetAngle() => MathF.Atan2(s, c);
 
-        /// Get the x-axis
-        private Vector2 GetXAxis() => new Vector2(c, s);
+		/// Get the x-axis
+		public Vector2 GetXAxis() => new(c, s);
 
-        /// Get the u-axis
-        private Vector2 GetYAxis() => new Vector2(-s, c);
+		/// Get the u-axis
+		public Vector2 GetYAxis() => new(-s, c);
     }
 }

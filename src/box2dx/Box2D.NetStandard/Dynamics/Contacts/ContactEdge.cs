@@ -26,6 +26,7 @@
 */
 
 using Box2D.NetStandard.Dynamics.Bodies;
+using System;
 
 namespace Box2D.NetStandard.Dynamics.Contacts
 {
@@ -38,24 +39,47 @@ namespace Box2D.NetStandard.Dynamics.Contacts
     /// </summary>
     public class ContactEdge
     {
+
+		private Contact? contact;
+
         /// <summary>
         ///  The contact.
         /// </summary>
-        public Contact contact;
+        public Contact Contact {
+			get {
+#if DEBUG
+				return contact ?? throw new InvalidOperationException();
+#else
+				return contact!;
+#endif
+			}
+			set => contact = value;
+		}
 
         /// <summary>
         ///  The next contact edge in the body's contact list.
         /// </summary>
-        public ContactEdge next;
+        public ContactEdge? Next;
+
+		private Body? other;
 
         /// <summary>
         ///  Provides quick access to the other body attached.
         /// </summary>
-        public Body other;
+        public Body Other {
+			get {
+#if DEBUG
+				return other ?? throw new InvalidOperationException();
+#else
+				return other!;
+#endif
+			}
+			set => other = value;
+		}
 
-        /// <summary>
-        ///  The previous contact edge in the body's contact list.
-        /// </summary>
-        public ContactEdge prev;
+		/// <summary>
+		///  The previous contact edge in the body's contact list.
+		/// </summary>
+		public ContactEdge? Prev;
     }
 }
